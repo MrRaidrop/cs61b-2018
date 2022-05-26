@@ -81,18 +81,14 @@ public class IntList {
      */
 
     public static IntList dcatenate(IntList A, IntList B) {
-        IntList res = A;
-        if (A == null) {
-            return B;
-        } else if (B == null) {
-            return A;
-        } else {
-            while (A.rest != null) {
-                A = A.rest;
-            }
-            A.rest = B;
+
+        if (A == null) return B;
+        IntList ptrA = A;
+        while (ptrA.rest != null) {
+            ptrA = ptrA.rest;
         }
-        return res;
+        ptrA.rest = B;
+        return A;
     }
 
     /**
@@ -100,42 +96,30 @@ public class IntList {
      * * elements of B.  May NOT modify items of A.  Use 'new'.
      */
     public static IntList catenate(IntList A, IntList B) {
-        IntList res = new IntList();
-        IntList ptr = res;
-        if (A == null && B == null) {
-            return null;
-        }
-        while (A != null || B != null) {
-            if (A != null) {
-                ptr.rest = new IntList(A.first, null);
-                ptr = ptr.rest;
-                A = A.rest;
-            } else if (B != null) {
-                ptr.rest = new IntList(B.first, null);
-                ptr = ptr.rest;
-                B = B.rest;
-            }
-        }
-        return res.rest;
-    }
-     /**
-     * Returns the reverse of the given IntList.
-     * This method is destructive. If given null
-     * as an input, returns null
-     */
 
-    public static IntList reverse(IntList A) {
+        IntList res;
         if (A == null) {
-            return null;
+            if (B == null) {
+                return null;
+            }
+            res = new IntList(B.first, null);
+            B = B.rest;
+        } else {
+            res = new IntList(A.first, null);
+            A = A.rest;
         }
-        IntList prev = null;
+        IntList ptr = res;
         while (A != null) {
-            IntList next = A.rest;
-            A.rest = prev;
-            prev = A;
-            A = next;
+            ptr.rest = new IntList(A.first, null);
+            A = A.rest;
+            ptr = ptr.rest;
         }
-        return prev;
+        while (B != null) {
+            ptr.rest = new IntList(B.first, null);
+            B = B.rest;
+            ptr = ptr.rest;
+        }
+        return res;
     }
 
 
