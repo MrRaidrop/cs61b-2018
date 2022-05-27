@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/cs61b/cs61b.iml" filepath="$PROJECT_DIR$/cs61b/cs61b.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/cs61b-2018.iml" filepath="$PROJECT_DIR$/.idea/cs61b-2018.iml" />
+      <module fileurl="file://$PROJECT_DIR$/cs61b-2018sp/cs61b-2018sp.iml" filepath="$PROJECT_DIR$/cs61b-2018sp/cs61b-2018sp.iml" />
+    </modules>
+  </component>
+</project>
