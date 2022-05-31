@@ -85,11 +85,11 @@ public class IntList {
             return A;
         }
         IntList current = new IntList(A.first, A.rest);
-        while (A.rest != null) {
-            A = A.rest;
+        while (current.rest != null) {
+            current = current.rest;
         }
-        A.rest = B;
-        return current;
+        current.rest = B;
+        return A;
     }
 
     /**
