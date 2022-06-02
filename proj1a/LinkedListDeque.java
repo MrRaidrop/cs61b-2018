@@ -1,6 +1,6 @@
 public class LinkedListDeque<T> {
-    private TNode sentinel_front;
-    private TNode sentinel_back;
+    private TNode sentinelfront;
+    private TNode sentinelback;
     private int size;
     /* fundation of the List*/
     private class TNode {
@@ -19,26 +19,38 @@ public class LinkedListDeque<T> {
 
     public LinkedListDeque() {
         size = 0;
-        sentinel_front = new TNode((T) new Object(), null, null);
-        sentinel_back = new TNode((T) new Object(), null, null);
-        sentinel_front.next = sentinel_back;
-        sentinel_back.prev = sentinel_front;
+        sentinelfront = new TNode((T) new Object(), null, null);
+        sentinelback = new TNode((T) new Object(), null, null);
+        sentinelfront.next = sentinelback;
+        sentinelback.prev = sentinelfront;
+    }
+
+    public LinkedListDeque(LinkedListDeque other) {
+        size = 0;
+        sentinelfront = new TNode((T) new Object(), null, null);
+        sentinelback = new TNode((T) new Object(), null, null);
+        sentinelfront.next = sentinelback;
+        sentinelback.prev = sentinelfront;
+
+        for (int i=0; i < other.size(); i += 1) {
+            addLast((T) other.get(i));
+        }
     }
 
     /** add a T item to the first of the Deque and return nothing.*/
     public void addFirst(T item) {
-        TNode current = new TNode(item, sentinel_front, sentinel_front.next);
-        TNode temp = sentinel_front.next;
+        TNode current = new TNode(item, sentinelfront, sentinelfront.next);
+        TNode temp = sentinelfront.next;
 
-        sentinel_front.next = current;
+        sentinelfront.next = current;
         size += 1;
     }
 
     /** add a T item to the last of the Deque and return nothing.*/
     public void addLast(T item) {
-        TNode current = new TNode(item, sentinel_back.prev, sentinel_back);
-        sentinel_back.prev.next = current;
-        sentinel_back.prev = current;
+        TNode current = new TNode(item, sentinelback.prev, sentinelback);
+        sentinelback.prev.next = current;
+        sentinelback.prev = current;
         size += 1;
     }
 
@@ -56,11 +68,11 @@ public class LinkedListDeque<T> {
      * separated by a space. Once all the items have been printed,
      *  print out a new line.*/
     public void printDeque() {
-        if (sentinel_front.next == sentinel_back) {
+        if (sentinelfront.next == sentinelback) {
             return;
         }
-        TNode cur = sentinel_front.next;
-        while (cur.next != sentinel_back) {
+        TNode cur = sentinelfront.next;
+        while (cur.next != sentinelback) {
             System.out.print(cur.item + " ");
             cur = cur.next;
         }
@@ -71,8 +83,8 @@ public class LinkedListDeque<T> {
      * If no such item exists, returns null.*/
     public T removeFirst() {
         T res = get(1);
-        sentinel_front.next.next.prev = sentinel_front;
-        sentinel_front.next = sentinel_front.next.next;
+        sentinelfront.next.next.prev = sentinelfront;
+        sentinelfront.next = sentinelfront.next.next;
         size -= 1;
         return res;
     }
@@ -81,8 +93,8 @@ public class LinkedListDeque<T> {
      * If no such item exists, returns null.*/
     public T removeLast() {
         T res = get(size);
-        sentinel_back.prev.prev.next = sentinel_front;
-        sentinel_back.prev = sentinel_front.prev.prev;
+        sentinelback.prev.prev.next = sentinelfront;
+        sentinelback.prev = sentinelfront.prev.prev;
         size -= 1;
         return res;
     }
@@ -94,9 +106,9 @@ public class LinkedListDeque<T> {
         if (index > size || index <= 0) {
             return null;
         }
-        TNode cur = sentinel_front;
+        TNode cur = sentinelfront;
         int S = size;
-        while (cur != sentinel_back) {
+        while (cur != sentinelback) {
             if (S == 0) {
                 return cur.item;
             }
@@ -105,6 +117,5 @@ public class LinkedListDeque<T> {
         }
         return null;
     }
-
-
 }
+
