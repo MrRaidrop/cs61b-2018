@@ -32,7 +32,7 @@ public class LinkedListDeque<T> {
         sentinelfront.next = sentinelback;
         sentinelback.prev = sentinelfront;
 
-        for (int i=0; i < other.size(); i += 1) {
+        for (int i = 0; i < other.size(); i += 1) {
             addLast((T) other.get(i));
         }
     }

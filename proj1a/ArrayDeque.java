@@ -1,17 +1,21 @@
 
-public class ArrayDeque<Item> {
-    private Item[] items;
+public class ArrayDeque<T> {
+    private T[] items;
     private int size;
 
-    /** Creates an empty list. */
+    /**
+     * Creates an empty list.
+     */
     public ArrayDeque() {
-        items = (Item[]) new Object[8];
+        items = (T[]) new Object[8];
         size = 0;
     }
 
-    /** Resizes the underlying array to the target capacity. */
+    /**
+     * Resizes the underlying array to the target capacity.
+     */
     private void resize(int capacity) {
-        Item[] a = (Item[]) new Object[capacity];
+        T[] a = (T[]) new Object[capacity];
         System.arraycopy(items, 0, a, 1, size);
         items = a;
     }
@@ -25,36 +29,47 @@ public class ArrayDeque<Item> {
             }
         }
     }
-    /** add a T item to the first of the Deque and return nothing.*/
-    public void addFirst(Item i) {
+
+    /**
+     * add a T item to the first of the Deque and return nothing.
+     */
+    public void addFirst(T i) {
         capacitycheck();
-        Item[] A = (Item[]) new Object[items.length + 1];
+        T[] A = (T[]) new Object[items.length + 1];
         A[0] = i;
         System.arraycopy(items, 1, A, 0, size);
         items = A;
         size += 1;
     }
 
-    /** add a T item to the last of the Deque and return nothing. */
-    public void addLast(Item x) {
+    /**
+     * add a T item to the last of the Deque and return nothing.
+     */
+    public void addLast(T x) {
         capacitycheck();
         items[size] = x;
         size = size + 1;
     }
 
-    /** Returns true if deque is empty, false otherwise.*/
+    /**
+     * Returns true if deque is empty, false otherwise.
+     */
     public boolean isEmpty() {
         return size == 0;
     }
 
-    /** eturns the number of items in the deque */
+    /**
+     * eturns the number of items in the deque
+     */
     public int size() {
         return size;
     }
 
-    /** Prints the items in the deque from first to last,
+    /**
+     * Prints the items in the deque from first to last,
      * separated by a space. Once all the items have been printed,
-     *  print out a new line.*/
+     * print out a new line.
+     */
     public void printDeque() {
         for (Item i : items) {
             System.out.println(i + " ");
@@ -62,11 +77,13 @@ public class ArrayDeque<Item> {
         System.out.println();
     }
 
-    /** Deletes item from front of the list and
-     * returns deleted item. */
-    public Item removeFirst() {
-        Item x = items[0];
-        Item[] A = (Item[]) new Object[items.length-1];
+    /**
+     * Deletes item from front of the list and
+     * returns deleted item.
+     */
+    public T removeFirst() {
+        T x = items[0];
+        T[] A = (T[]) new Object[items.length - 1];
         items[0] = null;
         size = size - 1;
         System.arraycopy(items, 1, A, 0, size);
@@ -74,42 +91,48 @@ public class ArrayDeque<Item> {
     }
 
 
-    /** Deletes item from back of the list and
-     * returns deleted item. */
-    public Item removeLast() {
-        Item x = items[size-1];
+    /**
+     * Deletes item from back of the list and
+     * returns deleted item.
+     */
+    public T removeLast() {
+        T x = items[size - 1];
         items[size - 1] = null;
         size = size - 1;
         return x;
     }
 
-    /** Gets the ith item in the list (0 is the front). */
-    public Item get(int i) {
+    /**
+     * Gets the ith item in the list (0 is the front).
+     */
+    public T get(int i) {
         return items[i];
     }
 
 /**
-    public Item[] insert(Item item, int position) {
-        if (position > size) {
-            addLast(item);
-            return items;
-        }
-        Item[] A = (Item[]) new Object[items.length];
-        System.arraycopy(items, 0, A, 0, position);
-        A[position] = item;
-        System.arraycopy(items, position, A, position+1, size-position);
-        size = size + 1;
-        items = A;
-        return A;
-    }
+ public T[] insert(T item, int position) {
+ if (position > size) {
+ addLast(item);
+ return items;
+ }
+ T[] A = (T[]) new Object[items.length];
+ System.arraycopy(items, 0, A, 0, position);
+ A[position] = item;
+ System.arraycopy(items, position, A, position+1, size-position);
+ size = size + 1;
+ items = A;
+ return A;
+ }
 
-    public void reverse() {
-        for(int i=0; i < size/2; i++) {
-            Item temp = items[i];
-            items[i] = items[size-i-1];
-            items[size-1-i] = temp;
-        }
-    }
-*/
+ public void reverse() {
+ for(int i=0; i < size/2; i++) {
+ T temp = items[i];
+ items[i] = items[size-i-1];
+ items[size-1-i] = temp;
+ }
+ }
+ */
+}
 
-} 
+
+
