@@ -71,7 +71,7 @@ public class ArrayDeque<T> {
      * print out a new line.
      */
     public void printDeque() {
-        for (Item i : items) {
+        for (T i : items) {
             System.out.println(i + " ");
         }
         System.out.println();
