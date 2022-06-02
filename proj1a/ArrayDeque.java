@@ -10,6 +10,14 @@ public class ArrayDeque<T> {
         items = (T[]) new Object[8];
         size = 0;
     }
+    public ArrayDeque(ArrayDeque other) {
+        items = (T[]) new Object[other.size];
+        size = 0;
+
+        for (int i = 0; i < other.size; i += 1) {
+            addLast((T) other.get(i));
+        }
+    }
 
     /**
      * Resizes the underlying array to the target capacity.

@@ -96,6 +96,16 @@ public class ArrayDequeTest {
         }
     }
 
+    @Test
+    public void testArrayother() {
+        ArrayDeque L = new ArrayDeque();
+        L.addLast(99);
+        L.addLast(36);
+        ArrayDeque S = new ArrayDeque(L);
+        assertEquals(99, L.get(L.size()-2));
+        assertEquals(36, L.get(L.size()-1));
+    }
+
     public static void main(String[] args) {
         jh61b.junit.TestRunner.runTests("all", ArrayDequeTest.class);
     }
