@@ -1,9 +1,9 @@
 public class ArrayDeque<T> {
-    transient T[] items;
+    private T[] items;
     //how many items in items
-    transient int size;
-    transient int head;
-    transient int tail;
+    private int size;
+    private int head;
+    private int tail;
 
     /**
      * Creates an empty list.
