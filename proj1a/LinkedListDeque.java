@@ -40,7 +40,6 @@ public class LinkedListDeque<T> {
     /** add a T item to the first of the Deque and return nothing.*/
     public void addFirst(T item) {
         TNode current = new TNode(item, sentinelfront, sentinelfront.next);
-        TNode temp = sentinelfront.next;
         sentinelfront.next.prev = current;
         sentinelfront.next = current;
         size += 1;
@@ -85,7 +84,7 @@ public class LinkedListDeque<T> {
         if (sizecheck()) {
             return null;
         }
-        T res = get(1);
+        T res = sentinelfront.next.item;
         sentinelfront.next.next.prev = sentinelfront;
         sentinelfront.next = sentinelfront.next.next;
         size -= 1;
@@ -98,7 +97,7 @@ public class LinkedListDeque<T> {
         if (sizecheck()) {
             return null;
         }
-        T res = get(size);
+        T res = sentinelback.prev.item;
         sentinelback.prev.prev.next = sentinelfront;
         sentinelback.prev = sentinelfront.prev.prev;
         size -= 1;
@@ -116,21 +115,21 @@ public class LinkedListDeque<T> {
         if (index > size || index < 0) {
             return null;
         }
-        TNode cur = sentinelfront;
+        TNode cur = sentinelfront.next;
         for (int i = 0; i < index; i++) {
             cur = cur.next;
         }
         return cur.item;
     }
+
     /** get the index th item use recursion.*/
     public T getRecursive(int index) {
         if (index > size || index < 0) {
             return null;
         }
-        TNode cur = sentinelfront.next;
-        return getRecursicehelper(index, cur);
+        return getRecursicehelper(index, sentinelfront.next);
     }
-    private T getRecursicehelper (int index ,TNode cur) {
+    private T getRecursicehelper(int index, TNode cur) {
         if (index == 0) {
             return cur.item;
         }

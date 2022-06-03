@@ -1,7 +1,6 @@
-import org.junit.Test;
-
 public class ArrayDeque<T> {
     private T[] items;
+    //how many items in items
     private int size;
 
     /**
@@ -11,7 +10,7 @@ public class ArrayDeque<T> {
         items = (T[]) new Object[8];
         size = 0;
     }
-    /**follow the autograder'sguide.
+    /**follow the auto-grader's guide.
     public ArrayDeque(ArrayDeque other) {
         items = (T[]) new Object[other.items.length];
         size = other.size;
@@ -22,9 +21,9 @@ public class ArrayDeque<T> {
      * Resizes the underlying array to the target capacity.
      */
     private void resize(int capacity) {
-        T[] a = (T[]) new Object[capacity];
-        System.arraycopy(items, 0, a, 0, size);
-        items = a;
+        T[] A = (T[]) new Object[capacity];
+        System.arraycopy(items, 0, A, 0, size);
+        items = A;
     }
 
     /** check the size of the array, if it reaches the capacity resize it.
@@ -50,6 +49,7 @@ public class ArrayDeque<T> {
         System.arraycopy(items, 0, A, 1, size);
         items = A;
         size += 1;
+        capacitycheck();
     }
 
     /**
@@ -59,6 +59,7 @@ public class ArrayDeque<T> {
         capacitycheck();
         items[size] = x;
         size = size + 1;
+        capacitycheck();
     }
 
     /**
@@ -92,24 +93,33 @@ public class ArrayDeque<T> {
      * returns deleted item.
      */
     public T removeFirst() {
+        if (size == 0) {
+            return null;
+        }
+        capacitycheck();
         T res = items[0];
         T[] A = (T[]) new Object[items.length - 1];
         items[0] = null;
         size = size - 1;
         System.arraycopy(items, 1, A, 0, size);
         items = A;
+        capacitycheck();
         return res;
     }
-
 
     /**
      * Deletes item from back of the list and
      * returns deleted item.
      */
     public T removeLast() {
+        if (size == 0) {
+            return null;
+        }
+        capacitycheck();
         T res = items[size - 1];
         items[size - 1] = null;
         size = size - 1;
+        capacitycheck();
         return res;
     }
 
@@ -117,10 +127,10 @@ public class ArrayDeque<T> {
      * Gets the index th item in the list (0 is the front).
      */
     public T get(int index) {
-        if (index <= 0 || index > size) {
+        if (index <= 0 || index >= size) {
             return null;
         }
-        return items[index - 1];
+        return items[index];
     }
 
 /**
