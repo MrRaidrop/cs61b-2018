@@ -22,7 +22,7 @@ public class LinkedListDeque<T> {
         sentinel.next = sentinel;
         sentinel.prev = sentinel;
     }
-    /**follow the autograder'sguide.
+    /**follow the auto-grader's guide.
     public LinkedListDeque(LinkedListDeque other) {
         size = 0;
         sentinelfront = new TNode((T) new Object(), null, null);

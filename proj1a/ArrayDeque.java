@@ -1,7 +1,9 @@
 public class ArrayDeque<T> {
-    private T[] items;
+    transient T[] items;
     //how many items in items
-    private int size;
+    transient int size;
+    transient int head;
+    transient int tail;
 
     /**
      * Creates an empty list.
@@ -11,69 +13,110 @@ public class ArrayDeque<T> {
         size = 0;
     }
     /**follow the auto-grader's guide.
-    public ArrayDeque(ArrayDeque other) {
-        items = (T[]) new Object[other.items.length];
-        size = other.size;
-        System.arraycopy(other.items, 0, items, 0, size);
-    }*/
+     public ArrayDeque(ArrayDeque other) {
+     items = (T[]) new Object[other.items.length];
+     size = other.size;
+     System.arraycopy(other.items, 0, items, 0, size);
+     }*/
 
     /**
      * Resizes the underlying array to the target capacity.
      */
-    private void resize(int capacity) {
-        T[] A = (T[]) new Object[capacity];
-        System.arraycopy(items, 0, A, 0, size);
-        items = A;
-    }
 
-    /** check the size of the array, if it reaches the capacity resize it.
-     * if its usage factor is lower than 25%, resize it.*/
-    private void capacitycheck() {
-        if (size == items.length) {
-            resize(size * 2);
-        }
-        if (items.length >= 16) {
-            if (size < items.length / 4) {
-                resize(items.length / 2);
-            }
-        }
+    // 扩容为原来的2倍
+    private void doubleCapacity() {
+        assert head == tail;
+        int p = head;
+        int n = items.length;
+        int r = n - p; // number of elements to the right of p
+        int newCapacity = n << 1;
+        if (newCapacity < 0)
+            throw new IllegalStateException("Sorry, deque too big");
+        Object[] a = new Object[newCapacity];
+        // 既然是head和tail已经重合了，说明tail是在head的左边。
+        System.arraycopy(items, p, a, 0, r); // 拷贝原数组从head位置到结束的数据
+        System.arraycopy(items, 0, a, r, p); // 拷贝原数组从开始到head的数据
+        items = (T[]) a;
+        head = 0; // 重置head和tail为数据的开始和结束索引
+        tail = n;
     }
 
     /**
      * add a T item to the first of the Deque and return nothing.
      */
-    public void addFirst(T i) {
-        capacitycheck();
-        T[] A = (T[]) new Object[items.length + 1];
-        A[0] = i;
-        System.arraycopy(items, 0, A, 1, size);
-        items = A;
-        size += 1;
-        capacitycheck();
+    public void addFirst(T t) {
+        if (t == null)
+            throw new NullPointerException();
+        // 本来可以简单地写成head-1，但如果head为0，减1就变为-1了，
+        // 和elements.length - 1进行与操作就是为了处理这种情况，这时结果为elements.length - 1。
+        items[head = (head - 1) & (items.length - 1)] = t;
+        if (head == tail) {
+            doubleCapacity();// head和tail不可以重叠
+        }
     }
 
     /**
      * add a T item to the last of the Deque and return nothing.
      */
-    public void addLast(T x) {
-        capacitycheck();
-        items[size] = x;
-        size = size + 1;
-        capacitycheck();
+    public void addLast(T t) {
+        if (t == null)
+            throw new NullPointerException();
+        // tail位置是空的，把元素放到这。
+        items[tail] = t;
+        // 和head的操作类似，为了处理临界情况 (tail为length - 1时)，和length - 1进行与操作，结果为0。
+        if ((tail = (tail + 1) & (items.length - 1)) == head) {
+            doubleCapacity();
+        }
     }
 
     /**
      * Returns true if deque is empty, false otherwise.
      */
     public boolean isEmpty() {
-        return size == 0;
+        return head == tail;
     }
 
     /**
-     * eturns the number of items in the deque
+     * returns the number of items in the deque
      */
     public int size() {
-        return size;
+        return (tail - head) & (items.length - 1);
+    }
+
+    public T removeFirst() {
+        T x = pollFirst();
+        if (x == null)
+            return null;
+        return x;
+    }
+
+    public T pollFirst() {
+        int h = head;
+        T result = items[h]; // Element is null if deque empty
+        if (result == null)
+            return null;
+        // 表明head位置已为空
+        items[h] = null;     // Must null out slot
+        head = (h + 1) & (items.length - 1); // 处理临界情况（当h为elements.length - 1时），与后的结果为0。
+        return result;
+    }
+
+    public T removeLast() {
+        T x = pollLast();
+        if (x == null) {
+            return null;
+        }
+        return x;
+    }
+
+    public T pollLast() {
+        int t = (tail - 1) & (items.length - 1); // 处理临界情况（当tail为0时），与后的结果为elements.length - 1。
+        T result = items[t];
+        if (result == null)
+            return null;
+        items[t] = null;
+        tail = t; // tail指向的是下个要添加元素的索引。
+        return result;
     }
 
     /**
@@ -89,73 +132,23 @@ public class ArrayDeque<T> {
     }
 
     /**
-     * Deletes item from front of the list and
-     * returns deleted item.
-     */
-    public T removeFirst() {
-        if (size == 0) {
-            return null;
-        }
-        capacitycheck();
-        T res = items[0];
-        T[] A = (T[]) new Object[items.length - 1];
-        items[0] = null;
-        size = size - 1;
-        System.arraycopy(items, 1, A, 0, size);
-        items = A;
-        capacitycheck();
-        return res;
-    }
-
-    /**
-     * Deletes item from back of the list and
-     * returns deleted item.
-     */
-    public T removeLast() {
-        if (size == 0) {
-            return null;
-        }
-        capacitycheck();
-        T res = items[size - 1];
-        items[size - 1] = null;
-        size = size - 1;
-        capacitycheck();
-        return res;
-    }
-
-    /**
      * Gets the index th item in the list (0 is the front).
      */
-    public T get(int index) {
-        if (index < 0 || index >= size) {
+    public T getFirst() {
+        T x = items[head];
+        if (x == null)
             return null;
-        }
-        return items[index];
+        return x;
+    }
+    public T getLast() {
+        // 处理临界情况（当tail为0时），与后的结果为elements.length - 1。
+        T x = items[(tail - 1) & (items.length - 1)];
+        if (x == null)
+            return null;
+        return x;
     }
 
-/**
- public T[] insert(T item, int position) {
- if (position > size) {
- addLast(item);
- return items;
- }
- T[] A = (T[]) new Object[items.length];
- System.arraycopy(items, 0, A, 0, position);
- A[position] = item;
- System.arraycopy(items, position, A, position+1, size-position);
- size = size + 1;
- items = A;
- return A;
- }
 
- public void reverse() {
- for(int i=0; i < size/2; i++) {
- T temp = items[i];
- items[i] = items[size-i-1];
- items[size-1-i] = temp;
- }
- }
- */
 }
 
 
