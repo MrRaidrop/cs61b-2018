@@ -11,12 +11,9 @@ public class ArrayDeque<T> {
         size = 0;
     }
     public ArrayDeque(ArrayDeque other) {
-        items = (T[]) new Object[other.size];
-        size = 0;
-
-        for (int i = 0; i < other.size; i += 1) {
-            addLast((T) other.get(i));
-        }
+        items = (T[]) new Object[other.items.length];
+        size = other.size;
+        System.arraycopy(other.items, 0, items, 0, size);
     }
 
     /**
@@ -28,10 +25,13 @@ public class ArrayDeque<T> {
         items = a;
     }
 
+    /** check the size of the array, if it reaches the capacity resize it.
+     * if its usage factor is lower than 25%, resize it.*/
     private void capacitycheck() {
         if (size == items.length) {
             resize(size * 2);
-        } else if (items.length >= 16) {
+        }
+        if (items.length >= 16) {
             if (size < items.length / 4) {
                 resize(items.length / 2);
             }
@@ -45,7 +45,7 @@ public class ArrayDeque<T> {
         capacitycheck();
         T[] A = (T[]) new Object[items.length + 1];
         A[0] = i;
-        System.arraycopy(items, 1, A, 0, size);
+        System.arraycopy(items, 0, A, 1, size);
         items = A;
         size += 1;
     }
@@ -79,8 +79,8 @@ public class ArrayDeque<T> {
      * print out a new line.
      */
     public void printDeque() {
-        for (T i : items) {
-            System.out.println(i + " ");
+        for (int i = 0; i < size; i += 1) {
+            System.out.println(items[i] + " ");
         }
         System.out.println();
     }
@@ -90,12 +90,13 @@ public class ArrayDeque<T> {
      * returns deleted item.
      */
     public T removeFirst() {
-        T x = items[0];
+        T res = items[0];
         T[] A = (T[]) new Object[items.length - 1];
         items[0] = null;
         size = size - 1;
         System.arraycopy(items, 1, A, 0, size);
-        return x;
+        items = A;
+        return res;
     }
 
 
@@ -104,17 +105,20 @@ public class ArrayDeque<T> {
      * returns deleted item.
      */
     public T removeLast() {
-        T x = items[size - 1];
+        T res = items[size - 1];
         items[size - 1] = null;
         size = size - 1;
-        return x;
+        return res;
     }
 
     /**
-     * Gets the ith item in the list (0 is the front).
+     * Gets the index th item in the list (0 is the front).
      */
-    public T get(int i) {
-        return items[i];
+    public T get(int index) {
+        if (index <= 0 || index > size) {
+            return null;
+        }
+        return items[index - 1];
     }
 
 /**

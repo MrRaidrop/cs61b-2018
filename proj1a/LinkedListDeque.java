@@ -106,16 +106,26 @@ public class LinkedListDeque<T> {
         if (index > size || index <= 0) {
             return null;
         }
-        TNode cur = sentinelfront;
-        int S = size;
-        while (cur != sentinelback) {
-            if (S == 0) {
-                return cur.item;
-            }
-            S -= 1;
+        TNode cur = sentinelfront.next;
+        while (index > 0) {
+            index -= 1;
             cur = cur.next;
         }
-        return null;
+        return cur.item;
+    }
+    /** get the index th item use recursion.*/
+    public T getRecursive(int index) {
+        if (index > size || index <= 0) {
+            return null;
+        }
+        TNode cur = sentinelfront.next;
+        return getRecursicehelper(index, cur);
+    }
+    private T getRecursicehelper (int index ,TNode cur) {
+        if (index == 0) {
+            return cur.next.item;
+        }
+        return getRecursicehelper(index - 1, cur.next);
     }
 }
 
