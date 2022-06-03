@@ -1,6 +1,5 @@
 public class LinkedListDeque<T> {
-    private TNode sentinelfront;
-    private TNode sentinelback;
+    private TNode sentinel;
     private int size;
     /* fundation of the List*/
     private class TNode {
@@ -19,10 +18,9 @@ public class LinkedListDeque<T> {
 
     public LinkedListDeque() {
         size = 0;
-        sentinelfront = new TNode((T) new Object(), null, null);
-        sentinelback = new TNode((T) new Object(), null, null);
-        sentinelfront.next = sentinelback;
-        sentinelback.prev = sentinelfront;
+        sentinel = new TNode((T) new Object(), null, null);
+        sentinel.next = sentinel;
+        sentinel.prev = sentinel;
     }
     /**follow the autograder'sguide.
     public LinkedListDeque(LinkedListDeque other) {
@@ -39,17 +37,17 @@ public class LinkedListDeque<T> {
 
     /** add a T item to the first of the Deque and return nothing.*/
     public void addFirst(T item) {
-        TNode current = new TNode(item, sentinelfront, sentinelfront.next);
-        sentinelfront.next.prev = current;
-        sentinelfront.next = current;
+        TNode current = new TNode(item, sentinel, sentinel.next);
+        sentinel.next.prev = current;
+        sentinel.next = current;
         size += 1;
     }
 
     /** add a T item to the last of the Deque and return nothing.*/
     public void addLast(T item) {
-        TNode current = new TNode(item, sentinelback.prev, sentinelback);
-        sentinelback.prev.next = current;
-        sentinelback.prev = current;
+        TNode current = new TNode(item, sentinel.prev, sentinel);
+        sentinel.prev.next = current;
+        sentinel.prev = current;
         size += 1;
     }
 
@@ -67,11 +65,11 @@ public class LinkedListDeque<T> {
      * separated by a space. Once all the items have been printed,
      *  print out a new line.*/
     public void printDeque() {
-        if (sentinelfront.next == sentinelback) {
+        if (sentinel.next == sentinel) {
             return;
         }
-        TNode cur = sentinelfront.next;
-        while (cur.next != sentinelback) {
+        TNode cur = sentinel.next;
+        while (cur.next != sentinel) {
             System.out.print(cur.item + " ");
             cur = cur.next;
         }
@@ -84,9 +82,9 @@ public class LinkedListDeque<T> {
         if (sizecheck()) {
             return null;
         }
-        T res = sentinelfront.next.item;
-        sentinelfront.next.next.prev = sentinelfront;
-        sentinelfront.next = sentinelfront.next.next;
+        T res = sentinel.next.item;
+        sentinel.next.next.prev = sentinel;
+        sentinel.next = sentinel.next.next;
         size -= 1;
         return res;
     }
@@ -97,9 +95,9 @@ public class LinkedListDeque<T> {
         if (sizecheck()) {
             return null;
         }
-        T res = sentinelback.prev.item;
-        sentinelback.prev.prev.next = sentinelfront;
-        sentinelback.prev = sentinelfront.prev.prev;
+        T res = sentinel.prev.item;
+        sentinel.prev.prev.next = sentinel;
+        sentinel.prev = sentinel.prev.prev;
         size -= 1;
         return res;
     }
@@ -115,7 +113,7 @@ public class LinkedListDeque<T> {
         if (index > size || index < 0) {
             return null;
         }
-        TNode cur = sentinelfront.next;
+        TNode cur = sentinel.next;
         for (int i = 0; i < index; i++) {
             cur = cur.next;
         }
@@ -127,7 +125,7 @@ public class LinkedListDeque<T> {
         if (index > size || index < 0) {
             return null;
         }
-        return getRecursicehelper(index, sentinelfront.next);
+        return getRecursicehelper(index, sentinel.next);
     }
     private T getRecursicehelper(int index, TNode cur) {
         if (index == 0) {
