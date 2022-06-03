@@ -103,19 +103,18 @@ public class LinkedListDeque<T> {
      * 1 is the next item, and so forth. If no such item exists,
      * returns null. Must not alter the deque!*/
     public T get(int index) {
-        if (index > size || index <= 0) {
+        if (index >= size || index < 0) {
             return null;
         }
-        TNode cur = sentinelfront.next;
-        while (index > 0) {
-            index -= 1;
+        TNode cur = sentinelfront;
+        for (int i = 0; i <= index; i++) {
             cur = cur.next;
         }
         return cur.item;
     }
     /** get the index th item use recursion.*/
     public T getRecursive(int index) {
-        if (index > size || index <= 0) {
+        if (index >= size || index < 0) {
             return null;
         }
         TNode cur = sentinelfront.next;
@@ -123,7 +122,7 @@ public class LinkedListDeque<T> {
     }
     private T getRecursicehelper (int index ,TNode cur) {
         if (index == 0) {
-            return cur.next.item;
+            return cur.item;
         }
         return getRecursicehelper(index - 1, cur.next);
     }
