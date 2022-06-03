@@ -90,7 +90,7 @@ public class ArrayDeque<T> {
         return x;
     }
 
-    public T pollFirst() {
+    private T pollFirst() {
         int h = head;
         T result = items[h]; // Element is null if deque empty
         if (result == null)
@@ -109,7 +109,7 @@ public class ArrayDeque<T> {
         return x;
     }
 
-    public T pollLast() {
+    private T pollLast() {
         int t = (tail - 1) & (items.length - 1); // 处理临界情况（当tail为0时），与后的结果为elements.length - 1。
         T result = items[t];
         if (result == null)
@@ -140,13 +140,13 @@ public class ArrayDeque<T> {
         }
         return (T) items[index];
     }
-    public T getFirst() {
+    private T getFirst() {
         T x = items[head];
         if (x == null)
             return null;
         return x;
     }
-    public T getLast() {
+    private T getLast() {
         // 处理临界情况（当tail为0时），与后的结果为elements.length - 1。
         T x = items[(tail - 1) & (items.length - 1)];
         if (x == null)
