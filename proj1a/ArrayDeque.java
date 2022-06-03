@@ -1,3 +1,4 @@
+import org.junit.Test;
 
 public class ArrayDeque<T> {
     private T[] items;
@@ -10,18 +11,19 @@ public class ArrayDeque<T> {
         items = (T[]) new Object[8];
         size = 0;
     }
+    /**follow the autograder'sguide.
     public ArrayDeque(ArrayDeque other) {
         items = (T[]) new Object[other.items.length];
         size = other.size;
         System.arraycopy(other.items, 0, items, 0, size);
-    }
+    }*/
 
     /**
      * Resizes the underlying array to the target capacity.
      */
     private void resize(int capacity) {
         T[] a = (T[]) new Object[capacity];
-        System.arraycopy(items, 0, a, 1, size);
+        System.arraycopy(items, 0, a, 0, size);
         items = a;
     }
 

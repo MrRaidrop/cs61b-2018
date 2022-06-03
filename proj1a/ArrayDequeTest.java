@@ -85,13 +85,11 @@ public class ArrayDequeTest {
     @Test
     public void testRemoveLastandFirst() {
         ArrayDeque L = new ArrayDeque();
-        L.addFirst(33);
-        L.addFirst(22);
-        L.addFirst(11);
-        assertEquals(33, L.removeLast());
-        assertEquals(2, L.size());
-        assertEquals(11, L.removeFirst());
-        assertEquals(22, L.get(1));
+        for (int i = 1; i < 18; i++) {
+            L.addLast(i);
+        }
+        assertEquals(1, L.removeFirst());
+        assertEquals(17, L.removeLast());
     }
 
     /** Tests insertion of a large number of items.*/
@@ -116,8 +114,8 @@ public class ArrayDequeTest {
         L.addLast(3);
         L.addLast(4);
         assertEquals(2, L.get(2));
-        ArrayDeque S = new ArrayDeque(L);
-        assertEquals(2, S.get(2));
+        //ArrayDeque S = new ArrayDeque(L);
+        //assertEquals(2, S.get(2));
         //assertEquals(1, S.get(1));
     }
 

@@ -1,6 +1,3 @@
-import org.junit.Test;
-
-import static org.junit.Assert.*;
 /** Performs some basic linked list tests. */
 public class LinkedListDequeTest {
 	
@@ -70,12 +67,23 @@ public class LinkedListDequeTest {
 		boolean passed = checkEmpty(true, lld1.isEmpty());
 
 		lld1.addFirst(10);
+
 		// should not be empty 
 		passed = checkEmpty(false, lld1.isEmpty()) && passed;
 
 		lld1.removeFirst();
 		// should be empty 
 		passed = checkEmpty(true, lld1.isEmpty()) && passed;
+
+		lld1.addFirst(1);
+		lld1.addFirst(2);
+		lld1.addFirst(3);
+		lld1.addFirst(4);
+		lld1.addFirst(5);
+		lld1.addFirst(6);
+		System.out.println(lld1.removeFirst());
+		System.out.println(lld1.removeFirst());
+
 
 		printTestStatus(passed);
 
@@ -94,4 +102,5 @@ public class LinkedListDequeTest {
 		//addFirstTest();;
 
 	}
-} 
+}
+

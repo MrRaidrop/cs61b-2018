@@ -24,7 +24,7 @@ public class LinkedListDeque<T> {
         sentinelfront.next = sentinelback;
         sentinelback.prev = sentinelfront;
     }
-
+    /**follow the autograder'sguide.
     public LinkedListDeque(LinkedListDeque other) {
         size = 0;
         sentinelfront = new TNode((T) new Object(), null, null);
@@ -35,13 +35,13 @@ public class LinkedListDeque<T> {
         for (int i = 0; i < other.size(); i += 1) {
             addLast((T) other.get(i));
         }
-    }
+    }*/
 
     /** add a T item to the first of the Deque and return nothing.*/
     public void addFirst(T item) {
         TNode current = new TNode(item, sentinelfront, sentinelfront.next);
         TNode temp = sentinelfront.next;
-
+        sentinelfront.next.prev = current;
         sentinelfront.next = current;
         size += 1;
     }
@@ -82,6 +82,9 @@ public class LinkedListDeque<T> {
     /** Removes and returns the item at the front of the deque.
      * If no such item exists, returns null.*/
     public T removeFirst() {
+        if (sizecheck()) {
+            return null;
+        }
         T res = get(1);
         sentinelfront.next.next.prev = sentinelfront;
         sentinelfront.next = sentinelfront.next.next;
@@ -92,6 +95,9 @@ public class LinkedListDeque<T> {
     /**  Removes and returns the item at the back of the deque.
      * If no such item exists, returns null.*/
     public T removeLast() {
+        if (sizecheck()) {
+            return null;
+        }
         T res = get(size);
         sentinelback.prev.prev.next = sentinelfront;
         sentinelback.prev = sentinelfront.prev.prev;
@@ -99,22 +105,26 @@ public class LinkedListDeque<T> {
         return res;
     }
 
+    private boolean sizecheck() {
+        return size == 0;
+    }
+
     /** Gets the item at the given index, where 0 is the front,
      * 1 is the next item, and so forth. If no such item exists,
      * returns null. Must not alter the deque!*/
     public T get(int index) {
-        if (index >= size || index < 0) {
+        if (index > size || index < 0) {
             return null;
         }
         TNode cur = sentinelfront;
-        for (int i = 0; i <= index; i++) {
+        for (int i = 0; i < index; i++) {
             cur = cur.next;
         }
         return cur.item;
     }
     /** get the index th item use recursion.*/
     public T getRecursive(int index) {
-        if (index >= size || index < 0) {
+        if (index > size || index < 0) {
             return null;
         }
         TNode cur = sentinelfront.next;
