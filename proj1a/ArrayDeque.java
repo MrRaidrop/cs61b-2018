@@ -134,6 +134,12 @@ public class ArrayDeque<T> {
     /**
      * Gets the index th item in the list (0 is the front).
      */
+    public T get(int index) {
+        if (index < 0 || index >= size) {
+            return null;
+        }
+        return (T) items[index];
+    }
     public T getFirst() {
         T x = items[head];
         if (x == null)
