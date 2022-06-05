@@ -1,108 +1,146 @@
-public class LinkedListDeque<T> implements Deque<T> {
-    private int size = 0;
-    private DLList sentinel;
-    private DLList sentFront = new DLList(null, null, null);
-    private DLList sentBack = new DLList(null, null, null);
-    private DLList gr = sentFront;
-
-    private class DLList {
+public class LinkedListDeque<T> implements Deque<T>{
+    private TNode sentinel;
+    private int size;
+    /* fundation of the List*/
+    private class TNode {
+        private TNode prev;
         private T item;
-        private DLList prev, next;
-        public DLList(T x, DLList pre, DLList n) {
-            item = x;
-            prev = pre;
+        private TNode next;
+
+        TNode(T i, LinkedListDeque<T>.TNode p, LinkedListDeque<T>.TNode n) {
+            item = i;
+            prev = p;
             next = n;
         }
+
     }
+
+
     public LinkedListDeque() {
         size = 0;
-        sentFront.next = sentBack;
-        sentBack.prev = sentFront;
+        sentinel = new TNode((T) new Object(), null, null);
+        sentinel.next = sentinel;
+        sentinel.prev = sentinel;
     }
+    /**follow the auto-grader's guide.
+    public LinkedListDeque(LinkedListDeque other) {
+        size = 0;
+        sentinelfront = new TNode((T) new Object(), null, null);
+        sentinelback = new TNode((T) new Object(), null, null);
+        sentinelfront.next = sentinelback;
+        sentinelback.prev = sentinelfront;
+
+        for (int i = 0; i < other.size(); i += 1) {
+            addLast((T) other.get(i));
+        }
+    }*/
+
+    /** add a T item to the first of the Deque and return nothing.*/
     @Override
     public void addFirst(T item) {
-        DLList semi = new DLList(item, sentFront, sentFront.next);
-        DLList sfn = sentFront.next;
-        sfn.prev = semi;
-        sentFront.next = semi;
-        size = size + 1;
+        TNode current = new TNode(item, sentinel, sentinel.next);
+        sentinel.next.prev = current;
+        sentinel.next = current;
+        size += 1;
     }
-    @Override
-     public void addLast(T item) {
 
-        DLList semi = new DLList(item, sentBack.prev, sentBack);
-        DLList sbp = sentBack.prev;
-        sbp.next = semi;
-        sentBack.prev = semi;
-        size = size + 1;
+    /** add a T item to the last of the Deque and return nothing.*/
+    @Override
+    public void addLast(T item) {
+        TNode current = new TNode(item, sentinel.prev, sentinel);
+        sentinel.prev.next = current;
+        sentinel.prev = current;
+        size += 1;
     }
+
+    /** Returns true if deque is empty, false otherwise.*/
     @Override
     public boolean isEmpty() {
         return size == 0;
     }
+
+    /** eturns the number of items in the deque */
     @Override
     public int size() {
         return size;
     }
+
+    /** Prints the items in the deque from first to last,
+     * separated by a space. Once all the items have been printed,
+     *  print out a new line.*/
     @Override
     public void printDeque() {
-        int i = 0;
-        DLList pd = sentFront;
-        while (i < size) {
-            System.out.print(" " + pd.next.item + " ");
-            pd = pd.next;
-            i = i + 1;
+        if (sentinel.next == sentinel) {
+            return;
         }
+        TNode cur = sentinel.next;
+        while (cur.next != sentinel) {
+            System.out.print(cur.item + " ");
+            cur = cur.next;
+        }
+        System.out.println();
     }
+
+    /** Removes and returns the item at the front of the deque.
+     * If no such item exists, returns null.*/
     @Override
     public T removeFirst() {
-        if (size == 0) {
+        if (sizecheck()) {
             return null;
         }
-        DLList firstRemove = sentFront.next;
-        DLList sfnn = sentFront.next.next;
-        sentFront.next = sfnn;
-        sfnn.prev = sentFront;
-        size = size - 1;
-        return firstRemove.item;
+        T res = sentinel.next.item;
+        sentinel.next.next.prev = sentinel;
+        sentinel.next = sentinel.next.next;
+        size -= 1;
+        return res;
     }
+
+    /**  Removes and returns the item at the back of the deque.
+     * If no such item exists, returns null.*/
     @Override
     public T removeLast() {
-        if (size == 0) {
+        if (sizecheck()) {
             return null;
         }
-        DLList lastRemove = sentBack.prev;
-        DLList sbpp = sentBack.prev.prev;
-        sbpp.next = sentBack;
-        sentBack.prev = sbpp;
-        size = size - 1;
-        return lastRemove.item;
+        T res = sentinel.prev.item;
+        sentinel.prev.prev.next = sentinel;
+        sentinel.prev = sentinel.prev.prev;
+        size -= 1;
+        return res;
     }
+
+    private boolean sizecheck() {
+        return size == 0;
+    }
+
+    /** Gets the item at the given index, where 0 is the front,
+     * 1 is the next item, and so forth. If no such item exists,
+     * returns null. Must not alter the deque!*/
     @Override
     public T get(int index) {
-        if ((index + 1) > size) {
+        if (index > size || index < 0) {
             return null;
         }
-        int i = 0;
-        DLList getindex = sentFront;
-        while (i <= index) {
-            getindex = getindex.next;
-            i = i + 1;
+        TNode cur = sentinel.next;
+        for (int i = 0; i < index; i++) {
+            cur = cur.next;
         }
-        return getindex.item;
+        return cur.item;
     }
+
+    /** get the index th item use recursion.*/
+    /**
     public T getRecursive(int index) {
-
-        if ((index + 1) > size) {
+        if (index > size || index < 0) {
             return null;
         }
-        if (index == 0) {
-            T gene = gr.next.item;
-            gr = sentFront;
-            return gene;
-        }
-        gr = gr.next;
-        return getRecursive(index - 1);
+        return getRecursicehelper(index, sentinel.next);
     }
-
+    private T getRecursicehelper(int index, TNode cur) {
+        if (index == 0) {
+            return cur.item;
+        }
+        return getRecursicehelper(index - 1, cur.next);
+    }*/
 }
+

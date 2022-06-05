@@ -1,11 +1,6 @@
-/**
- * Deque interface
- *
- * @author Wangkun
- * @create 2021-01-30-9:43
- **/
-public interface Deque<T> {
+interface Deque<T> {
     void addFirst(T item);
+
     void addLast(T item);
 
     boolean isEmpty();

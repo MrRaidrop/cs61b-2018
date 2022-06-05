@@ -1,86 +1,162 @@
-/**
- * ArrayDeque
- *
- * @author Wangkun
- * @create 2021-01-27-11:56
- **/
-public class ArrayDeque<T> implements Deque<T> {
-    private final int factor = 2;
-    private int size = 0;
-    private T[] arrDe;
+public class ArrayDeque<T> implements Deque<T>{
+        /** array to save data.*/
+        private T[] items;
+        /** size of the deque. */
+        private int size;
 
-    public ArrayDeque() {
-        size = 0;
-        arrDe = (T[]) new Object[8];
-    }
-    private void resize(int capacity, int position, int position1) {
-        if (capacity <= 16) {
-            capacity = 16;
-        }
-        T[] a = (T[]) new Object[capacity];
-        System.arraycopy(arrDe, position, a, position1, size);
-        arrDe = a;
-    }
-    @Override
-    public void addFirst(T item) {
-        int al = arrDe.length;
-        if (size == arrDe.length) {
-            al = size * factor;
-        }
-        resize(al, 0, 1);
-        arrDe[0] = item;
-        size = size + 1;
-    }
-    @Override
-    public void addLast(T item) {
-        if (size == arrDe.length) {
-            resize(size * factor, 0, 0);
-        }
-        arrDe[size] = item;
-        size = size + 1;
-    }
-    @Override
-    public T removeFirst() {
-        T rf = arrDe[0];
-        size = size - 1;
-        int rfs = arrDe.length;
-        if ((size <= (arrDe.length * 0.25)) && (arrDe.length >= 16)) {
-            rfs = size * factor;
-        }
-        resize(rfs, 1, 0);
-        return rf;
-    }
-    @Override
-    public T removeLast() {
-        T reLast = arrDe[size - 1];
-        arrDe[size - 1] = null;
-        size = size - 1;
-        if ((size <= (arrDe.length * 0.25)) && (arrDe.length >= 16)) {
-            resize(size * factor, 0, 0);
-        }
-        return reLast;
-    }
-    @Override
-    public int size() {
-        return size;
-    }
-    @Override
-    public boolean isEmpty() {
-        return size == 0;
-    }
-    public void printDeque() {
-        int i = 0;
-        while (i < size) {
-            System.out.println(arrDe[i]);
-            i = i + 1;
+        /** size of the array. */
+        private int length;
+
+        /** front index. */
+        private int front;
+
+        /** back index. */
+        private int back;
+
+        /** constructor of ArrayDeque. */
+        public ArrayDeque() {
+            items = (T[]) new Object[8];
+            size = 0;
+            length = 8;
+            front = 4;
+            back = 4;
         }
 
-    }
-    @Override
-    public T get(int index) {
-        if ((index + 1) > size) {
-            return null;
+        /** return if the deque is empty.*/
+        @Override
+        public boolean isEmpty() {
+            return size == 0;
         }
-        return arrDe[index];
+
+        /** return the size of the deque. */
+        @Override
+        public int size() {
+            return size;
+        }
+
+        /** return the "index - 1".*/
+        private int minusOne(int index) {
+            if (index == 0) {
+                return length - 1;
+            }
+            return index - 1;
+        }
+
+        /** return the "index + 1".*/
+        private int plusOne(int index, int module) {
+            index %=  module;
+            if (index == module - 1) {
+                return 0;
+            }
+            return index + 1;
+        }
+        private void sizecheck() {
+            if (size == length - 1) {
+                grow();
+            }
+            if (length >= 16 && length / size >= 4) {
+                shrink();
+            }
+        }
+
+    private void grow() {
+        T[] newArray = (T[]) new Object[length * 2];
+        int ptr1 = front;
+        int ptr2 = length;
+        while (ptr1 != back) {
+            newArray[ptr2] = items[ptr1];
+            ptr1 = plusOne(ptr1, length);
+            ptr2 = plusOne(ptr2, length * 2);
+        }
+        front = length;
+        back = ptr2;
+        items = newArray;
+        length *= 2;
     }
+
+        private void shrink() {
+            T[] cur = (T[]) new Object[length / 2];
+            int ptr1 = front;
+            int ptr2 = length / 4;
+            while (ptr1 != back) {
+                cur[ptr2] = items[ptr1];
+                ptr1 = plusOne(ptr1, length);
+                ptr2 = plusOne(ptr2, length / 2);
+            }
+            front = length / 4;
+            back = ptr2;
+            items = cur;
+            length = length / 2;
+        }
+
+        /** add one item at the front of the deque.*/
+        @Override
+        public void addFirst(T item) {
+            sizecheck();
+            front = minusOne(front);
+            items[front] = item;
+            size++;
+        }
+
+        /** add one item at the end of the deque.*/
+        @Override
+        public void addLast(T item) {
+            sizecheck();
+            items[back] = item;
+            back = plusOne(back, length);
+            size++;
+        }
+        /** Prints the items in the deque from first to last,
+         * separated by a space. Once all the items have been printed
+         *  print out a new line.*/
+        @Override
+        public void printDeque() {
+            int ptr = front;
+            while (ptr != back) {
+                System.out.print(items[ptr] + " ");
+                ptr = plusOne(ptr, length);
+            }
+        }
+
+        /** remove the first item.*/
+        @Override
+        public T removeFirst() {
+            if (size == 0) {
+                return null;
+            }
+            sizecheck();
+            T res = items[front];
+            front = plusOne(front, length);
+            size--;
+            return res;
+        }
+
+        /** remove the last item.*/
+        @Override
+        public T removeLast() {
+            if (size == 0) {
+                return null;
+            }
+            sizecheck();
+            back = minusOne(back);
+            size--;
+            return items[back];
+        }
+
+        /** return the item indexed at index.*/
+        @Override
+        public T get(int index) {
+            if (index >= size) {
+                return null;
+            }
+            int ptr = front;
+            for (int i = 0; i < index; i++) {
+                ptr = plusOne(ptr, length);
+            }
+            return items[ptr];
+        }
+
+
 }
+
+

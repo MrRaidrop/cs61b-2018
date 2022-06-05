@@ -1,4 +1,4 @@
-public class LinkedListDeque<T> {
+public class LinkedListDeque<T> implements Deque<Item>{
     private TNode sentinel;
     private int size;
     /* fundation of the List*/
