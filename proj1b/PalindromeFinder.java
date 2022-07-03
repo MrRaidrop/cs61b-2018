@@ -25,9 +25,10 @@ public class PalindromeFinder {
                     count++;
                 }
             }
-            System.out.println("the count of offby"+j+" Palindrome is"+count);
+            System.out.println("the count of offby"+j+" Palindrome is "+count);
         }
         System.out.print("the max length of any N Palindrome is "+maxlengthsofar);
-        System.out.println("and the word is "+maxlengthword);
+        System.out.println(" and the word is "+maxlengthword);
     }
 }
+
