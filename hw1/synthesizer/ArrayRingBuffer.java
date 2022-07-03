@@ -1,10 +1,6 @@
 package synthesizer;
 import java.util.Iterator;
 
-//TODO: Make sure to that this class and all of its methods are public
-//TODO: Make sure to add the override tag for all overridden methods
-//TODO: Make sure to make this class implement BoundedQueue<T>
-
 public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
     /* Index for the next dequeue or peek. */
     private int first;
@@ -20,8 +16,6 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
      * Create a new ArrayRingBuffer with the given capacity.
      */
     public ArrayRingBuffer(int capacity) {
-        // TODO: Create new array with capacity elements.
-        //       first, last, and fillCount should all be set to 0.
         first = 0;
         last = 0;
         fillCount = 0;
@@ -95,7 +89,7 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
             count = 0;
         }
         public boolean hasNext() {
-            return cap == fillCount;
+            return count == fillCount;
         }
         public T next() {
             T res = rb[pointer];
