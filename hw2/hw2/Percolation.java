@@ -38,7 +38,9 @@ public class Percolation {
             return;
         }
         grid.put(n * col + row, true);
-        connectAround(row, col);
+        if (n != 1) {
+            connectAround(row, col);
+        }
         count++;
     }
 
@@ -51,8 +53,12 @@ public class Percolation {
     // is the site (row, col) full?
     public boolean isFull(int row, int col) {
         indexCheck(row, col);
-        return isConnected(n * col + row, 0);
+        if (!isOpen(row, col)) {
+            return false;
+        }
+        return isConnected(n * col + row, 1);
     }
+
 
     // number of open sites
     public int numberOfOpenSites() {
