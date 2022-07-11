@@ -17,7 +17,7 @@ public class UnionFind {
 
     /* Throws an exception if v1 is not a valid vertex. */
     private void validate(int v1) {
-        if (parent[v1] >= 0) {
+        if (v1 > parent.length - 1) {
             throw new IllegalArgumentException("");
         }
     }
@@ -36,7 +36,7 @@ public class UnionFind {
 
     /* Returns true if nodes v1 and v2 are connected. */
     public boolean isConnected(int v1, int v2) {
-        return find(v1) == find(v2) & (parent[v1] >= 0 | parent[v2] >=0);
+        return find(v1) == find(v2);
     }
 
     /* Connects two elements v1 and v2 together. v1 and v2 can be any valid 
@@ -45,30 +45,34 @@ public class UnionFind {
        vertex with itself or vertices that are already connected should not 
        change the sets but may alter the internal structure of the data. */
     public void connect(int v1, int v2) {
-        if (isConnected(v1, v2)) {
-            if (parent[v2] < 0) {
-                parent[v1] = v2;
-                return;
-            }
-            parent[v2] = v1;
+        validate(v1);
+        validate(v2);
+        int root1 = find(v1);
+        int root2 = find(v2);
+        if (root1 == root2) {
             return;
         }
-        if (find(v1) < find(v2)) {
-            parent[v2] = v1;
-            parent[find(v1)] -= 1;
+        int newsizenegetive = parent[root1] + parent[root2];
+        if (parent[root1] > parent[root2]) {
+            parent[root1] = root2;
+            parent[root2] = newsizenegetive;
             return;
         }
-        parent[v1] = v2;
-        parent[find(v2)] -= 1;
+        parent[root2] = root1;
+        parent[root1] = newsizenegetive;
     }
 
     /* Returns the root of the set v1 belongs to. Path-compression is employed
        allowing for fast search-time. */
     public int find(int v1) {
-        while (parent[v1] >= 0) {
-            v1 = parent[v1];
-        }
-        return v1;
+        int root = v1;
+        while (parent[root] >= 0)
+            root = parent[root];
+        while (v1 != root) {
+            int cur = parent[v1];
+            parent[v1] = root;
+            v1 = cur;
+        }//saw no difference with or without path compression..why??????
+        return root;
     }
-
 }
