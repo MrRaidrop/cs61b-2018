@@ -19,7 +19,10 @@ public class Percolation {
         NN = N * N;
         parent = new int[N * N];
         grid = new HashMap<>();
-        for (int i = 0; i < NN; i++) {
+        for (int i = 0; i < n; i++) {
+            grid.put(i, true);
+        }
+        for (int i = n; i < NN; i++) {
             grid.put(i, false);
         }
         parent[0] = -1 * N;
