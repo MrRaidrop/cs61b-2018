@@ -19,10 +19,7 @@ public class Percolation {
         NN = N * N;
         parent = new int[N * N];
         grid = new HashMap<>();
-        for (int i = 0; i < n; i++) {
-            grid.put(i, true);
-        }
-        for (int i = n; i < NN; i++) {
+        for (int i = 0; i < NN; i++) {
             grid.put(i, false);
         }
         parent[0] = -1 * N;
@@ -54,9 +51,6 @@ public class Percolation {
     // is the site (row, col) full?
     public boolean isFull(int row, int col) {
         indexCheck(row, col);
-        if (!isOpen(row, col)) {
-            return false;
-        }
         return isConnected(n * col + row, 0);
     }
 

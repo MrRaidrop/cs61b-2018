@@ -54,9 +54,6 @@ public class Percolation {
     // is the site (row, col) full?
     public boolean isFull(int row, int col) {
         indexCheck(row, col);
-        if (!isOpen(row, col)) {
-            return false;
-        }
         return isConnected(n * col + row, 0);
     }
 
