@@ -12,6 +12,9 @@ public class Percolation {
 
     // create N-by-N grid, with all sites initially blocked
     public Percolation(int N) {
+        if (N <= 0) {
+            throw new IllegalArgumentException("");
+        }
         n = N;
         NN = N * N;
         parent = new int[N * N];
@@ -48,7 +51,10 @@ public class Percolation {
     // is the site (row, col) full?
     public boolean isFull(int row, int col) {
         indexCheck(row, col);
-        return find(n * col + row) == 0;
+        if (!isOpen(row, col)) {
+            return false;
+        }
+        return isConnected(n * col + row, 0);
     }
 
     // number of open sites
@@ -68,7 +74,7 @@ public class Percolation {
         return false;
     }
 
-    public void connect(int v1, int v2) {
+    private void connect(int v1, int v2) {
         int root1 = find(v1);
         int root2 = find(v2);
         if (root1 == root2) {
@@ -95,7 +101,7 @@ public class Percolation {
         parent[root1] = newSize;
     }
 
-    public int find(int v1) {
+    private int find(int v1) {
         int root = v1;
         while (parent[root] >= 0) {
             root = parent[root];
@@ -107,12 +113,12 @@ public class Percolation {
         } //saw no difference with or without path compression. why??????
         return root;
     }
-    public boolean isConnected(int v1, int v2) {
+    private boolean isConnected(int v1, int v2) {
         return find(v1) == find(v2);
     }
 
     //when open the site, connect it with its around sites.
-    public void connectAround(int row, int col) {
+    private void connectAround(int row, int col) {
         if (col == 0 & row == 0) {
             connectDOWN(row, col);
             connectRIGHT(row, col);
@@ -163,31 +169,31 @@ public class Percolation {
         connectDOWN(row, col);
         return;
     }
-    public void connectUP(int row, int col) {
+    private void connectUP(int row, int col) {
         int up = n * (col - 1) + row;
         if (grid.get(up)) {
             connect(n * col + row, up);
         }
     }
-    public void connectDOWN(int row, int col) {
+    private void connectDOWN(int row, int col) {
         int down = n * (col + 1) + row;
         if (grid.get(down)) {
             connect(n * col + row, down);
         }
     }
-    public void connectLEFT(int row, int col) {
+    private void connectLEFT(int row, int col) {
         int left = n * col + row - 1;
         if (grid.get(left)) {
             connect(n * col + row, left);
         }
     }
-    public void connectRIGHT(int row, int col) {
+    private void connectRIGHT(int row, int col) {
         int right = n * col + row + 1;
         if (grid.get(right)) {
             connect(n * col + row, right);
         }
     }
-    public void indexCheck(int row, int col) {
+    private void indexCheck(int row, int col) {
         if (row < 0 | col < 0 | row > n - 1 | col > n - 1) {
             throw new IndexOutOfBoundsException("Index out of Bound.");
         }
