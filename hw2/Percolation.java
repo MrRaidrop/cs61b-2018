@@ -32,12 +32,12 @@ public class Percolation {
     }
 
     // open the site (row, col) if it is not open already
-    public void open(int row, int col) {
+    public void open(int col, int row) {
         indexCheck(row, col);
         if (isOpen(row, col)) {
             return;
         }
-        grid.put(n * col + row, true);
+        grid.replace(n * col + row, false, true);
         if (n != 1) {
             connectAround(row, col);
         }
@@ -45,13 +45,13 @@ public class Percolation {
     }
 
     // is the site (row, col) open?
-    public boolean isOpen(int row, int col) {
+    public boolean isOpen(int col, int row) {
         indexCheck(row, col);
         return grid.get(n * col + row);
     }
 
     // is the site (row, col) full?
-    public boolean isFull(int row, int col) {
+    public boolean isFull(int col, int row) {
         indexCheck(row, col);
         if (!isOpen(row, col)) {
             return false;
@@ -196,7 +196,7 @@ public class Percolation {
             connect(n * col + row, right);
         }
     }
-    private void indexCheck(int row, int col) {
+    private void indexCheck(int col, int row) {
         if (row < 0 | col < 0 | row > n - 1 | col > n - 1) {
             throw new IndexOutOfBoundsException("Index out of Bound.");
         }
@@ -204,6 +204,9 @@ public class Percolation {
 
     // use for unit testing (not required, but keep this here for the autograder)
     public static void main(String[] args) {
+        Percolation p = new Percolation(6);
+        p.open(0,5);
+        System.out.println(p.grid.get(5));
     }
 
 }
