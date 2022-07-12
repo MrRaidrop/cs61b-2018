@@ -15,7 +15,7 @@
  *  with with site (0, 0) in the upper left-hand corner.
  *
  ******************************************************************************/
-package hw2;
+package hw2.hw2;
 
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdDraw;
