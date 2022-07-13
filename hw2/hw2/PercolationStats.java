@@ -16,7 +16,7 @@ public class PercolationStats {
         int row;
         int col;
         for (int i = 0; i < T; i++) {
-            Percolation simple = new Percolation(N);
+            Percolation simple = pf.make(N);
             while (!simple.percolates()) {
                 int x, y;
                 do {
@@ -49,10 +49,4 @@ public class PercolationStats {
         return mean() + 1.96 * stddev() / Math.sqrt(t);
     }
 
-    /**
-    public static void main(String[] args) {
-    PercolationStats ps = new PercolationStats(4, 10, new PercolationFactory());
-    System.out.println(ps.mean());
-    System.out.println(ps.stddev());
-    }*/
 }
