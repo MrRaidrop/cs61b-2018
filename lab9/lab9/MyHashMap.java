@@ -1,6 +1,7 @@
 package lab9;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -23,6 +24,10 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
 
     public MyHashMap() {
         buckets = new ArrayMap[DEFAULT_SIZE];
+        this.clear();
+    }
+    public MyHashMap(int newSize) {
+        buckets = new ArrayMap[newSize];
         this.clear();
     }
 
@@ -53,19 +58,51 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      */
     @Override
     public V get(K key) {
-        throw new UnsupportedOperationException();
+        if (key == null) {
+            return null;
+        }
+        int i = hash(key);
+        return buckets[i].get(key);
     }
 
     /* Associates the specified value with the specified key in this map. */
     @Override
     public void put(K key, V value) {
-        throw new UnsupportedOperationException();
+        if (key == null) {
+            throw new IllegalArgumentException("Key shouldn't be null.");
+        }
+        if (value == null) {
+            remove(key);
+        }
+        int i = hash(key);
+        buckets[i].put(key, value);
+        size++;
+        resizeCheck();
     }
 
     /* Returns the number of key-value mappings in this map. */
     @Override
     public int size() {
-        throw new UnsupportedOperationException();
+        return size;
+    }
+
+    // If the load factor is over the max_Lf, resize the bucket.
+    private void resizeCheck() {
+        if (loadFactor() > MAX_LF) {
+            resize();
+        }
+    }
+    // Resize the hash table, by throwing the items into a new hashmap
+    // with re-hashing the whole keys.
+    private void resize() {
+        MyHashMap<K, V> temp = new MyHashMap<>(buckets.length * 2);
+        for (int i = 0; i < buckets.length; i++) {
+            for (K key : buckets[i].keySet()) {
+                temp.put(key, buckets[i].get(key));
+            }
+        }
+        this.buckets = temp.buckets;
+        this.size = temp.size();
     }
 
     //////////////// EVERYTHING BELOW THIS LINE IS OPTIONAL ////////////////

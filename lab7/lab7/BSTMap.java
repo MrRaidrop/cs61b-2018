@@ -1,4 +1,6 @@
 package lab7;
+import edu.princeton.cs.algs4.Queue;
+
 import java.util.TreeSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -95,7 +97,12 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K ,V> {
      * If you don't implement this, throw an UnsupportedOperationException. */
     @Override
     public Set<K> keySet() {
-        throw new UnsupportedOperationException("Next time haha.");
+        Set<K> res = new TreeSet<>();
+        for (int i = 0; i < size(); i++) {
+            K key = keys().iterator().next();
+            res.add(key);
+        }
+        return res;//need to learn more.
     }
     /* min and max method return the min and max key in the map. */
     private K min() {
@@ -122,36 +129,42 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K ,V> {
         }
         return max(x.Right);
     }
-    /**private Set<K> keys() {
+    private Iterable<K> keys() {
         if (root == null) {
-            return new TreeSet<>();
+            return new Queue<>();
         }
         return keys(min(), max());
     }
-    private Set<K> keys(K low, K high) {
+    private Iterable<K> keys(K low, K high) {
         if (low == null) {
             throw new IllegalArgumentException();
         } else if (high == null) {
             throw new IllegalArgumentException();
         }
-        Set<K> set = new TreeSet<>();
-        keys(root, set, low, high);
-        return set;
+        Queue<K> que = new Queue<>();
+        Queue<K> cur = new Queue<>();
+        keys(root, cur, low, high);
+        for (int i = 0; i < size() - 1; i++) {
+            que.enqueue(cur.peek());
+            keys(root, cur, cur.dequeue(), high);
+        }
+        return que;
     }
-    private void keys(Node x, Set<K> set, K low, K high) {
+    private void keys(Node x, Queue<K> que, K low, K high) {
+        int i = size();
         if  (x == null) {
             return;
         }
         int cpLow = low.compareTo(x.key);
         int cpHigh = high.compareTo(x.key);
         if (cpLow < 0) {
-            keys(x.Left, set, low, high);
+            keys(x.Left, que, low, high);
         } else if (cpLow <= 0 && cpHigh >= 0) {
-            set.add(x.key);
+            que.enqueue(x.key);
         } else if (cpHigh > 0) {
-            keys(x.Right, set, low, high);
+            keys(x.Right, que, low, high);
         }
-    }*/
+    }
 
     /* Removes the mapping for the specified key from this map if present.
      * Not required for Lab 7. If you don't implement this, throw an

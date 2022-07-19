@@ -18,7 +18,7 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
     public ArrayRingBuffer(int capacity) {
         first = 0;
         last = 0;
-        fillCount = 0;
+        fillCount = test;
         cap = capacity;
         rb = (T[]) new Object[capacity];
     }

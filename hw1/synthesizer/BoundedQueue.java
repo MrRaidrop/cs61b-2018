@@ -7,6 +7,7 @@ public interface BoundedQueue<T> extends Iterable<T> {
     void enqueue(T x);  // add item x to the end
     T dequeue();        // delete and return item from the front
     T peek();           // return (but do not delete) item from the front
+    int test = 0;
 
     // is the buffer empty (fillCount equals zero)?
     default boolean isEmpty() {
