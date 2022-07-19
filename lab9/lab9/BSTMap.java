@@ -1,7 +1,7 @@
 package lab9;
 import edu.princeton.cs.algs4.Queue;
 
-import java.util.TreeSet;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -97,8 +97,9 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K ,V> {
      * If you don't implement this, throw an UnsupportedOperationException. */
     @Override
     public Set<K> keySet() {
-        Set<K> res = new TreeSet<>();
+        Set<K> res = new HashSet<>();
         for (int i = 0; i < size(); i++) {
+
             K key = keys().iterator().next();
             res.add(key);
         }
