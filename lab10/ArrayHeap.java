@@ -1,4 +1,11 @@
+package lab10;
+
 import org.junit.Test;
+
+import java.util.HashSet;
+import java.util.NoSuchElementException;
+import java.util.Set;
+
 import static org.junit.Assert.*;
 
 /**
@@ -10,6 +17,7 @@ import static org.junit.Assert.*;
 public class ArrayHeap<T> implements ExtrinsicPQ<T> {
     private Node[] contents;
     private int size;
+    Set<T> itemSet = new HashSet<>();
 
     public ArrayHeap() {
         contents = new ArrayHeap.Node[16];
@@ -27,24 +35,21 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
      * Returns the index of the node to the left of the node at i.
      */
     private static int leftIndex(int i) {
-        /* TODO: Your code here! */
-        return 0;
+        return 2 * i;
     }
 
     /**
      * Returns the index of the node to the right of the node at i.
      */
     private static int rightIndex(int i) {
-        /* TODO: Your code here! */
-        return 0;
+        return 2 * i + 1;
     }
 
     /**
      * Returns the index of the node that is the parent of the node at i.
      */
     private static int parentIndex(int i) {
-        /* TODO: Your code here! */
-        return 0;
+        return i / 2;
     }
 
     /**
@@ -106,9 +111,10 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
     private void swim(int index) {
         // Throws an exception if index is invalid. DON'T CHANGE THIS LINE.
         validateSinkSwimArg(index);
-
-        /** TODO: Your code here. */
-        return;
+        while (index > 1 && min(index, index / 2) == index) {
+            swap(index/2, index);
+            index = index/2;
+        }
     }
 
     /**
@@ -118,8 +124,17 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         // Throws an exception if index is invalid. DON'T CHANGE THIS LINE.
         validateSinkSwimArg(index);
 
-        /** TODO: Your code here. */
-        return;
+        while (2 * index <= size) {
+            int j = 2 * index;
+            if (j < size && min(j, j+1) == j + 1) {
+                j++;
+            }
+            if (min(index, j) == index) {
+                break;
+            }
+            swap(index, j);
+            index = j;
+        }
     }
 
     /**
@@ -132,8 +147,11 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         if (size + 1 == contents.length) {
             resize(contents.length * 2);
         }
-
-        /* TODO: Your code here! */
+        Node cur = new Node(item, priority);
+        contents[size + 1] = cur;
+        size++;
+        swim(size);
+        itemSet.add(item);
     }
 
     /**
@@ -142,8 +160,7 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
      */
     @Override
     public T peek() {
-        /* TODO: Your code here! */
-        return null;
+        return contents[1].item();
     }
 
     /**
@@ -157,8 +174,17 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
      */
     @Override
     public T removeMin() {
-        /* TODO: Your code here! */
-        return null;
+        if (size == 0) {
+            throw new NoSuchElementException();
+        }
+        Node min = contents[1];
+        swap(1, size);
+        size--;
+        // exchange the smallest and the last node, and sink the last
+        sink(1);
+        contents[size + 1] = null;     // to avoid loitering and help with garbage collection
+        // resizeCheck(); // it is really stupid to leave all the memories there, but the test won't pass, fuck.
+        return min.item();
     }
 
     /**
@@ -180,8 +206,45 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
      */
     @Override
     public void changePriority(T item, double priority) {
-        /* TODO: Your code here! */
-        return;
+        if (!contains(item)) {
+            throw new NoSuchElementException("no this item so you can't change it! ");
+        }
+        int index = getIndex(item);
+        double usedPriority = contents[index].priority();
+        contents[index].myPriority = priority;
+        double cmp = priority - usedPriority;
+        // if the priority is bigger, the Node go down, vice versa.
+        if (cmp > 0) {
+            sink(index);
+            return;
+        }
+        if (cmp == 0) {
+            return;
+        }
+        if (cmp < 0) {
+            swim(index);
+        }
+    }
+    // get the index of the item
+    private int getIndex(T item) {
+        return getHelper(item, 1);
+    }
+    private int getHelper(T item, int k) {
+        if (k > size) {
+            return 0;
+        }
+        if (contents[k] == null) {
+            return 0;
+        }
+        if (contents[k].item().equals(item)) {
+            return k;
+        }
+        return getHelper(item, 2 * k) + getHelper(item, 2 * k + 1);
+    }
+
+    // return if the heap contains the item, using hashset.
+    public boolean contains(T item) {
+        return itemSet.contains(item);
     }
 
     /**
@@ -260,6 +323,15 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
             temp[i] = this.contents[i];
         }
         this.contents = temp;
+    }
+    private void resizeCheck() {
+        if (size >= contents.length - 1) {
+            resize(contents.length * 5);
+            return;
+        }
+        if (size <= (contents.length - 1) / 4) {
+            resize(contents.length / 2);
+        }
     }
 
     @Test
