@@ -73,6 +73,10 @@ public class Board implements WorldState {
                 if (tiles[i][j] != x + 1) {
                     res++;
                 }
+                if (tiles[i][j] == BLANK) {
+                    x++;
+                    continue;
+                }
                 x++;
             }
         }
