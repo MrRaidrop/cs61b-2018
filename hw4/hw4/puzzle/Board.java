@@ -70,7 +70,7 @@ public class Board implements WorldState {
         int res = 0;
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles.length; j++) {
-                if (tiles[i][j] != x) {
+                if (tiles[i][j] != x + 1) {
                     res++;
                 }
                 x++;
@@ -78,6 +78,7 @@ public class Board implements WorldState {
         }
         return res;
     }
+    /**
     public static void main(String[] args) {
         int x = 0;
         int[][] cur = new int[3][3];
@@ -88,7 +89,7 @@ public class Board implements WorldState {
         }
         Board test = new Board(cur);
         test.manhattan();
-    }
+    }*/
     /** The sum of the Manhattan distances
      * (sum of the vertical and horizontal distance)
      * from the tiles to their goal positions.. */
@@ -165,6 +166,10 @@ public class Board implements WorldState {
         }
         s.append("\n");
         return s.toString();
+    }
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
 }
