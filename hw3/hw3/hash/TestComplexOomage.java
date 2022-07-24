@@ -36,13 +36,14 @@ public class TestComplexOomage {
     @Test
     public void testWithDeadlyParams() {
         List<Oomage> deadlyList = new ArrayList<>();
-        List<Integer> temp = new ArrayList<>();
 
-        for (int i = 0; i < 1000; i++) {
-            temp.add(128);
-        }
-        Oomage oomage = new ComplexOomage(temp);
-        for (int i = 0; i < 1000; i++) {
+
+        for (int i = 0; i < 100; i++) {
+            List<Integer> temp = new ArrayList<>();
+            for (int j = 0; j < i; j++) {
+                temp.add(8 * j);
+            }
+            Oomage oomage = new ComplexOomage(temp);
             deadlyList.add(oomage);
         }
 
