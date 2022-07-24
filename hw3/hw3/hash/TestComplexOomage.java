@@ -38,10 +38,10 @@ public class TestComplexOomage {
         List<Oomage> deadlyList = new ArrayList<>();
 
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 20; i++) {
             List<Integer> temp = new ArrayList<>();
             for (int j = 0; j < i; j++) {
-                temp.add(8 * j);
+                temp.add(128);
             }
             Oomage oomage = new ComplexOomage(temp);
             deadlyList.add(oomage);
