@@ -1,6 +1,5 @@
 package hw3.hash;
 import java.awt.Color;
-import java.util.ArrayList;
 
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdDraw;
@@ -10,7 +9,6 @@ public class SimpleOomage implements Oomage {
     protected int red;
     protected int green;
     protected int blue;
-    private ArrayList<ArrayList<Integer>> hashtable;
     private static final double WIDTH = 0.01;
     private static final boolean USE_PERFECT_HASH = true;
 
@@ -22,8 +20,8 @@ public class SimpleOomage implements Oomage {
         if (getClass() != o.getClass()) {
             return false;
         }
-        SimpleOomage Oo = (SimpleOomage) o;
-        if (red == Oo.red && blue == Oo.blue && green == Oo.green) {
+        SimpleOomage oo = (SimpleOomage) o;
+        if (red == oo.red && blue == oo.blue && green == oo.green) {
             return true;
         }
         return false;
@@ -35,7 +33,7 @@ public class SimpleOomage implements Oomage {
         if (!USE_PERFECT_HASH) {
             return red + green + blue;
         } else {
-            return red / 5+ green * 53 / 5 + blue * 53 / 5 * 53;
+            return red / 5 + green * 53 / 5 + blue * 53 / 5 * 53;
         }
     }
 
