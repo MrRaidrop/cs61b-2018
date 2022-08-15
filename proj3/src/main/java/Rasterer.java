@@ -14,22 +14,17 @@ public class Rasterer {
     public static final double ROOT_ULLAT = 37.892195547244356, ROOT_ULLON = -122.2998046875,
             ROOT_LRLAT = 37.82280243352756, ROOT_LRLON = -122.2119140625;
     public static final int TILE_SIZE = 256;
-    public static final double RootlonDPP = Math.abs(ROOT_ULLON - ROOT_LRLON) / TILE_SIZE;
+    private static final double LONG_WIDTH = Math.abs(ROOT_LRLON - ROOT_ULLON);
+    private static final double LAT_HEIGHT = Math.abs(ROOT_ULLAT - ROOT_LRLAT);
+    public static final double Root_lonDPP = Math.abs(ROOT_ULLON - ROOT_LRLON) / TILE_SIZE;
 
     public Rasterer() {
     }
-    private int getDepth(double lonDPP) {
-        int depth = 0;
-        double temp = RootlonDPP;
-        while (lonDPP < temp) {
-            depth++;
-            temp = temp / 2;
-        }
-        if (depth > 7) {
-            return 7;
-        }else {
-            return depth;
-        }
+    private int getDepth(double ullon, double lrlon, double width) {
+        double desiredLonDPP = (lrlon - ullon) / width;
+        double n = Math.log(LONG_WIDTH / (desiredLonDPP * TILE_SIZE)) / Math.log(2.0);
+        int depth = (int) Math.ceil(n);
+        return Math.min(7, depth);
     }
     private int[] getWhich(double lon, double lat, int depth) {
         double sclaeLon = Math.abs(ROOT_LRLON - ROOT_ULLON) / Math.pow(2, depth);
@@ -64,7 +59,7 @@ public class Rasterer {
         }
         return res;
     }
-    /**
+
     @Test
     public void test() {
         double ullon = -122.30410170759153;
@@ -74,7 +69,7 @@ public class Rasterer {
         double w = 1085;
         double h = 556;
         double lonDPP = Math.abs(ullon - lrlon) / w;
-        int depth = getDepth(lonDPP);
+        int depth = getDepth(ullon, lrlon, w);
         System.out.println(depth);
 
         int[] ultest = getWhich(ullon, ullat, depth);
@@ -91,7 +86,7 @@ public class Rasterer {
 
 
     }
-    */
+
 
 
     /**
@@ -130,23 +125,74 @@ public class Rasterer {
         double lrlat = params.get("lrlat");
         double w = params.get("w");
         double h = params.get("h");
-        double lonDPP = (ullon - lrlon) / w;
-        int depth = getDepth(lonDPP);
+        int depth = getDepth(ullon, lrlon, w);
         int[] ulPos = getWhich(ullon, ullat, depth);
         int[] lrPos = getWhich(lrlon, lrlat, depth);
         String[][] grid = toDisplay(ulPos, lrPos, depth);
+        double widthPerPic = LONG_WIDTH / Math.pow(2.0, depth);
+        double heightPerPic = LAT_HEIGHT / Math.pow(2.0, depth);
+        int xMin = (int) (Math.floor((ullon - ROOT_ULLON) / widthPerPic)) ;
+        int xMax = (int) (Math.floor((lrlon - ROOT_ULLON) / widthPerPic)) ;
+        int yMin = (int) (Math.floor((ROOT_ULLAT - ullat) / heightPerPic)) ;
+        int yMax = (int) (Math.floor((ROOT_ULLAT - lrlat) / heightPerPic)) ;
+
+        double xLeftBounding = ROOT_ULLON + xMin * widthPerPic;
+        double xRightBounding = ROOT_ULLON + (xMax + 1) * widthPerPic;
+        double yUpperBouding = ROOT_ULLAT - yMin * heightPerPic;
+        double yLowerBouding = ROOT_ULLAT - (yMax + 1) * heightPerPic;
+        // corner situation
+        if (ullon < ROOT_ULLON) {
+            xMin = 0;
+            xLeftBounding = ROOT_ULLON;
+        }
+        if (lrlon > ROOT_LRLON) {
+            xMax = (int) Math.pow(2, depth) - 1;
+            xRightBounding = ROOT_LRLON;
+        }
+        if (ullat > ROOT_ULLAT) {
+            yMin = 0;
+            yUpperBouding = ROOT_ULLAT;
+        }
+        if (lrlat < ROOT_LRLAT) {
+            yMax = (int) Math.pow(2, depth) - 1;
+            yLowerBouding = ROOT_LRLAT;
+        }
+        /**
+        String[][] render_grid = new String[yMax - yMin + 1][xMax - xMin + 1];
+        for (int i = yMin; i <= yMax; i++) {
+            for (int j = xMin; j <= xMax; j++) {
+                render_grid[i - yMin][j - xMin] = "d" + depth + "_x" + j + "_y" + i + ".png";
+            }
+        }*/
 
         Map<String, Object> results = new HashMap<>();
-        results.put("render_grid", grid);
-        results.put("raster_ul_lon", ullon);
-        results.put("raster_ul_lat", ullat);
-        results.put("raster_lr_lon", lrlon);
-        results.put("raster_lr_lat", lrlat);
-        results.put("depth", depth);
-        results.put("query_success", true);
+
+        results.put("query_success", false);
+        if (lrlat >= ROOT_ULLAT || lrlon <= ROOT_ULLON
+                || ullat <= ROOT_LRLAT || ullon >= ROOT_LRLON
+                || ullon >= lrlon || ullat <= lrlat) {
+            results.put("render_grid", null);
+            results.put("raster_ul_lon", 0);
+            results.put("raster_ul_lat", 0);
+            results.put("raster_lr_lon", 0);
+            results.put("raster_lr_lat", 0);
+            results.put("depth", 0);
+        }
+        else {
+
+            results.put("render_grid", grid);
+            results.put("raster_ul_lon", xLeftBounding);
+            results.put("raster_ul_lat", yUpperBouding);
+            results.put("raster_lr_lon", xRightBounding);
+            results.put("raster_lr_lat", yLowerBouding);
+
+            results.put("depth", depth);
+            results.put("query_success", true);
 
 
+        }
         return results;
+
     }
 
 }

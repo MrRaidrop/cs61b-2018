@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -25,7 +26,10 @@ public class Router {
      */
     public static List<Long> shortestPath(GraphDB g, double stlon, double stlat,
                                           double destlon, double destlat) {
-        return null; // FIXME
+        Point startP = g.nodes.get(g.closest(stlon, stlat));
+        Point endP = g.nodes.get(g.closest(destlon, destlat));
+        AStarSolver<Long> solver = new AStarSolver<>(g, startP.id, endP.id);
+        return solver.getSolution();
     }
 
     /**
@@ -37,8 +41,72 @@ public class Router {
      * route.
      */
     public static List<NavigationDirection> routeDirections(GraphDB g, List<Long> route) {
-        return null; // FIXME
+        NavigationDirection curDirection = new NavigationDirection();
+        List<NavigationDirection> res = new ArrayList<>();
+        long pre = route.get(0);
+        long cur = route.get(1);
+        double curWeight = g.distance(pre, cur);
+        curDirection.distance = curWeight;
+        double preDegree = g.bearing(pre, cur);
+        double curDegree;
+        curDirection.direction = 0;
+        curDirection.way = g.getWayName(pre, cur);
+        String curWayName;
+
+        for (int i = 1, j = 2; j < route.size(); i++, j++) {
+            pre = route.get(i);
+            cur = route.get(j);
+            curDegree = g.bearing(pre, cur);
+            int degreeDiff = relativeDirection(preDegree, curDegree);
+            curWayName = g.getWayName(pre, cur);
+            curWeight = g.distance(pre, cur);
+            // two condition: 1: direction changes, way update, cur NAV goes to res
+            // 2: direction no change, way changes, way update,
+            // direction is 1, cur NAV goes to res
+            if (degreeDiff != 1 && !curWayName.equals(curDirection.way)) {
+                res.add(curDirection);
+                curDirection = new NavigationDirection();
+                curDirection.direction = degreeDiff;
+                curDirection.distance = 0;
+            }
+            else if (!curWayName.equals(curDirection.way)) {
+                res.add(curDirection);
+                curDirection = new NavigationDirection();
+                curDirection.distance = 0;
+                curDirection.direction = degreeDiff;
+            }
+            curDirection.way = curWayName;
+            curDirection.distance += curWeight;
+            preDegree = curDegree;
+            // update distance anyway, if direction or way change,
+            // distance will acumulate from scratch.
+        }
+        res.add(curDirection);
+        return res;
     }
+
+
+    private static int relativeDirection(double prevBearing, double curBearing) {
+        double relativeBearing = curBearing - prevBearing;
+        double absBearing = Math.abs(relativeBearing);
+        if (absBearing > 180) {
+            absBearing = 360 - absBearing;
+            relativeBearing *= -1;
+        }
+        if (absBearing <= 15) {
+            return NavigationDirection.STRAIGHT;
+        }
+        if (absBearing <= 30) {
+            return relativeBearing < 0 ? NavigationDirection.SLIGHT_LEFT : NavigationDirection.SLIGHT_RIGHT;
+        }
+        if (absBearing <= 100) {
+            return relativeBearing < 0 ? NavigationDirection.LEFT : NavigationDirection.RIGHT;
+        }
+        else {
+            return relativeBearing < 0 ? NavigationDirection.SHARP_LEFT : NavigationDirection.SHARP_RIGHT;
+        }
+    }
+
 
 
     /**
