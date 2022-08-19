@@ -22,80 +22,13 @@ public class Router {
      * @param destlat The latitude of the destination location.
      * @return A list of node id's in the order visited on the shortest path.
      */
-    // my solution will take the autograder out of memory,
-    // so I will use sb's solution for shortest path instead
-//    public static List<Long> shortestPath(GraphDB g, double stlon, double stlat,
-//                                          double destlon, double destlat) {
-//        Point startP = g.nodes.get(g.closest(stlon, stlat));
-//        Point endP = g.nodes.get(g.closest(destlon, destlat));
-//        AStarSolver<Long> solver = new AStarSolver<>(g, startP.id, endP.id);
-//        return solver.getSolution();
-//    }
-    private static Point start;
-    private static Point destination;
-    private static GraphDB graph;
-    private static class SearchNode implements Comparable<SearchNode> {
-        public Long id;
-        public SearchNode parent;
-        public double distanceToStart;
-        public double priorit;
-
-        public SearchNode(Long id, SearchNode parent,double distanceToStart) {
-            this.id = id;
-            this.parent = parent;
-            this.distanceToStart = distanceToStart;
-            this.priorit = distanceToStart + distanceToDest(id);
-        }
-        @Override
-        public int compareTo(SearchNode o) {
-            if (this.priorit < o.priorit) {
-                return -1;
-            }
-            if (this.priorit > o.priorit) {
-                return 1;
-            }
-            return 0;
-        }
-    }
-
-    private static double distanceToDest(Long id) {
-        Point v = graph.nodes.get(id);
-        return GraphDB.distance(v.getX(), v.getY(), destination.getX(), destination.getY());
-    }
+    // auto grader is not satisfied T_T  he said that java lang out of memory, wtf!
     public static List<Long> shortestPath(GraphDB g, double stlon, double stlat,
                                           double destlon, double destlat) {
-        graph = g;
-        start = graph.nodes.get(g.closest(stlon, stlat));
-        destination = graph.nodes.get(g.closest(destlon, destlat));
-        Map<Long, Boolean> marked = new HashMap<>();
-        PriorityQueue<SearchNode> pq = new PriorityQueue<>();
-        pq.offer(new SearchNode(start.id, null, 0));
-        while (!pq.isEmpty() && !isGoal(pq.peek())) {
-            SearchNode v = pq.poll();
-            //标记为经过
-            marked.put(v.id, true);
-            for (Long w : g.adjacent(v.id)) {
-                if (!marked.containsKey(w) || marked.get(w) == false) {
-                    pq.offer(new SearchNode(w, v, v.distanceToStart + distance(g, w, v.id)));
-                }
-            }
-        }
-        SearchNode pos = pq.peek();
-        ArrayList<Long> path = new ArrayList<>();
-        while (pos != null) {
-            path.add(pos.id);
-            pos = pos.parent;
-        }
-        Collections.reverse(path);
-        return path; // FIXME
-    }
-    private static double distance(GraphDB graph,Long id1, Long id2) {
-        Point v1 = graph.nodes.get(id1);
-        Point v2 = graph.nodes.get(id2);
-        return GraphDB.distance(v1.getX(), v1.getY(), v2.getX(), v2.getY());
-    }
-    private static boolean isGoal(SearchNode v) {
-        return distanceToDest(v.id) == 0;
+        Point startP = g.nodes.get(g.closest(stlon, stlat));
+        Point endP = g.nodes.get(g.closest(destlon, destlat));
+        AStarSolver<Long> solver = new AStarSolver<>(g, startP.id, endP.id);
+        return solver.getSolution();
     }
 
 
