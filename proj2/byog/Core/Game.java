@@ -32,7 +32,5 @@ public class Game {
         TETile[][] finalWorldFrame = null;
         return finalWorldFrame;
     }
-    @Test
-    public void testsquare() {
-    }
+
 }

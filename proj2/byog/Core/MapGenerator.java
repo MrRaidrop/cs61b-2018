@@ -4,7 +4,6 @@ package byog.Core;
 import java.util.Random;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Stack;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
 
@@ -12,27 +11,99 @@ public class MapGenerator {
     int mapwidth;
     int maplength;
     int maxRoomNum;
-    private static final int minroomsize = 6;
-    private static final int maxroomsize = 10;
+    private static final int minroomsize = 5;
+    private static final int maxroomsize = 12;
+    private static position[][] allPos;
     ArrayList<Square> squares;
+    private int numberofrooms;
     ArrayList<Hallway> hallways;
-    private static final Random RANDOM = new Random(); //plan B
-    //private Random RANDOM;
+    long Seed;
+    Random RANDOM;
+    private int numOfUnblock = 0;
+    private int numOfblocked = 0;
+    private position playerPos;
+    private position goalPos;
+
+
 
     // reference: https://zhuanlan.zhihu.com/p/27381213
-    public MapGenerator(int mapwidth1, int maplength1, int maxRoomNum1, TETile[][] world1) {
+    public MapGenerator(int mapwidth1, int maplength1, int maxRoomNum1, TETile[][] world1, long seed) {
         mapwidth = mapwidth1;
         maplength = maplength1;
         maxRoomNum = maxRoomNum1;
-        //Random RANDOM = new Random(SEED);
+        RANDOM = new Random(seed);
+        for (int x = 0; x < mapwidth; x += 1) {
+            for (int y = 0; y < maplength; y += 1) {
+                world1[x][y] = Tileset.GRASS;
+            }
+        }
         generateSquares(world1);
         generateHalls(world1, squares);
+        generateSquaresAgain(world1);
+        getAllPos(world1);
+        setPlayerAndGoal(world1);
+
+    }
+
+    void getAllPos(TETile[][] world1) {
+        allPos = new position[mapwidth][maplength];
+        for (int x = 0; x < mapwidth; x += 1) {
+            for (int y = 0; y < maplength; y += 1) {
+                if (world1[x][y].equals(Tileset.WALL)) {
+                    position cur = new position(x, y, true);
+                    // set damage wall here after, using randomness
+                    allPos[x][y] = cur;
+                    numOfblocked++;
+                }
+                if (world1[x][y].equals(Tileset.FLOOR)) {
+                    position cur = new position(x, y, false);
+                    // set damage floor here
+                    allPos[x][y] = cur;
+                    numOfUnblock++;
+                }
+                // add something after maybe
+            }
+        }
+    }
+    void setDamageFloor() {
+
+    }
+
+    position getPlayerPosInit(TETile[][] world1) {
+        return playerPos;
+    }
+    position getGoalPos(TETile[][] world1) {
+        return goalPos;
+    }
+    void setPlayerAndGoal(TETile[][] world1) {
+        int pp = RandomUtils.uniform(RANDOM, 1, numOfUnblock);
+        int ld = RandomUtils.uniform(RANDOM, 1, numOfblocked);
+
+        for (int x = 0; x < mapwidth; x += 1) {
+            for (int y = 0; y < maplength; y += 1) {
+                if (world1[x][y].equals(Tileset.WALL)) {
+                    ld--;
+                    if (ld == 0) {
+                        world1[x][y] = Tileset.LOCKED_DOOR;
+                        goalPos = new position(x, y);
+                    }
+                }
+                if (world1[x][y].equals(Tileset.FLOOR)) {
+                    pp--;
+                    if (pp == 0) {
+                        world1[x][y] = Tileset.PLAYER;
+                        playerPos = new position(x, y);
+                    }
+                }
+                // add something after maybe
+            }
+        }
     }
 
     //generate 6 to given numbers of rooms with restricted size, and draw it.
     void generateSquares(TETile[][] world1) {
         squares = new ArrayList<Square>();
-        int numberofrooms = RandomUtils.uniform(RANDOM, 6, maxRoomNum);
+        numberofrooms = RandomUtils.uniform(RANDOM, 6, maxRoomNum);
         //generate rooms of random number from 6 to given max number
         while (squares.size() < numberofrooms) {
             Square S1 = oneSquareGenerator(maxroomsize, minroomsize);
@@ -42,10 +113,17 @@ public class MapGenerator {
                 S1.SquareRoom = position.SquarePositionGenerator
                         (S1.x1 + 1, S1.x2 - 1, S1.y2 + 1, S1.y1 - 1, false);
                 squares.add(S1);
+                S1.drawSquareWallFirst(world1);
                 S1.drawSquare(world1, Tileset.FLOOR);
             }
         }
         squares = sortSquares(squares);
+    }
+
+    void generateSquaresAgain(TETile[][] world1) {
+        for (Square s : squares) {
+            s.drawSquare(world1, Tileset.FLOOR);
+        }
     }
 
     private void generateHalls(TETile[][] world1, List<Square> squares1) {

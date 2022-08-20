@@ -44,6 +44,13 @@ class Square {
             }
         }
     }
+    void drawSquareWallFirst(TETile[][] world1) {
+        for (int x = x1 - 1; x < x2 + 1; x++) {
+            for (int y = y2 - 1; y < y1 + 1; y++) {
+                world1[x][y] = Tileset.WALL;
+            }
+        }
+    }
 
 
 

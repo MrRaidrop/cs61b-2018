@@ -112,6 +112,9 @@ public class position {
         }
         return p2;
     }
+    double distance(position other) {
+        return Math.pow((Xpos - other.getX()), 2) + Math.pow((Ypos - other.getY()), 2);
+    }
     //may use later
     //reference https://github.com/lijian12345/cs61b-sp18/blob/master/proj2/byog/Core/Position.java
     private List<position> getAroundPositions(int width, int height, boolean isAll) {

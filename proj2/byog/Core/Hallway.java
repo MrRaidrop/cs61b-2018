@@ -18,14 +18,14 @@ class Hallway {
     }
 
     static position addColumHall(TETile[][] world1, position pos, int len) {
-        for (int y = 0; y < len; y++) {
+        for (int y = 0; y < len + 2; y++) {
             world1[pos.Xpos - 1][pos.Ypos + y] = Tileset.WALL;
             world1[pos.Xpos + 1][pos.Ypos + y] = Tileset.WALL;
         }
         return new position(pos.Xpos, pos.Ypos + len);
     }
     static position addRowHall(TETile[][] world1, position pos, int width) {
-        for (int x = 0; x < width; x++) {
+        for (int x = 0; x < width + 2; x++) {
             world1[pos.Xpos + x][pos.Ypos - 1] = Tileset.WALL;
             world1[pos.Xpos + x][pos.Ypos + 1] = Tileset.WALL;
         }
