@@ -1,4 +1,5 @@
 package byog.Core;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -6,7 +7,7 @@ import java.util.Random;
 
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
-public class position {
+public class position implements Serializable {
     int Xpos;
     int Ypos;
     boolean blocked;

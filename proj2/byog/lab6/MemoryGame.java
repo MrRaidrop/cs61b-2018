@@ -76,7 +76,6 @@ public class MemoryGame {
     }
 
     public void flashSequence(String letters) {
-        //TODO: Display each character in letters, making sure to blank the screen between letters
         for (int i = 0; i < letters.length(); i++) {
             drawFrame(letters.substring(i, i + 1));
             StdDraw.pause(1000);
@@ -114,7 +113,7 @@ public class MemoryGame {
             String playerGiven = solicitNCharsInput(round);
             if (s.equals(playerGiven)) {
                 round++;
-            } else {    
+            } else {
                 gameOver = true;
                 drawFrame("Game over! You made it to round:" + round);
             }

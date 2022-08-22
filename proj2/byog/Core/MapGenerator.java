@@ -11,8 +11,8 @@ public class MapGenerator {
     int mapwidth;
     int maplength;
     int maxRoomNum;
-    private static final int minroomsize = 5;
-    private static final int maxroomsize = 12;
+    private static final int minroomsize = 2;
+    private static final int maxroomsize = 10;
     private static position[][] allPos;
     ArrayList<Square> squares;
     private int numberofrooms;
@@ -69,23 +69,26 @@ public class MapGenerator {
 
     }
 
-    position getPlayerPosInit(TETile[][] world1) {
-        return playerPos;
-    }
     position getGoalPos(TETile[][] world1) {
         return goalPos;
     }
     void setPlayerAndGoal(TETile[][] world1) {
         int pp = RandomUtils.uniform(RANDOM, 1, numOfUnblock);
         int ld = RandomUtils.uniform(RANDOM, 1, numOfblocked);
+        boolean goalSeted = false;
 
         for (int x = 0; x < mapwidth; x += 1) {
             for (int y = 0; y < maplength; y += 1) {
                 if (world1[x][y].equals(Tileset.WALL)) {
                     ld--;
-                    if (ld == 0) {
+                    if (ld <= 0 && !goalSeted &&
+                            ((world1[x - 1][y].equals(Tileset.WALL) &&
+                                    world1[x + 1][y].equals(Tileset.WALL)) ||
+                                    (world1[x][y - 1].equals(Tileset.WALL) &&
+                                            world1[x][y + 1].equals(Tileset.WALL)))) {
                         world1[x][y] = Tileset.LOCKED_DOOR;
                         goalPos = new position(x, y);
+                        goalSeted = true;
                     }
                 }
                 if (world1[x][y].equals(Tileset.FLOOR)) {
@@ -161,7 +164,7 @@ public class MapGenerator {
     // helper method: use random starting position to generate a Square
     Square oneSquareGenerator(int maxl, int minl) {
         //randomx1 is the left X of the square
-        int randomx1 = RandomUtils.uniform(RANDOM, 10, mapwidth - maxl - 10);
+        int randomx1 = RandomUtils.uniform(RANDOM, 5, mapwidth - maxl - 5);
         //randomy1 is the Down Y of the square
         int randomy1 = RandomUtils.uniform(RANDOM, maxl + 5, maplength - 5);
         int onesidelen = RandomUtils.uniform(RANDOM, minl, maxl);
