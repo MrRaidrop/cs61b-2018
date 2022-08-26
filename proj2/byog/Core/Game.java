@@ -217,7 +217,10 @@ public class Game {
 
             char c = StdDraw.nextKeyTyped();
 
-            if (c == '1' || c == '2' || c == '3') {
+            if (c == '1' || c == '2' || c == '3' || c == 'q') {
+                if(c == 'q') {
+                    System.exit(0);
+                }
                 String inputFile = "savefile" + c + ".txt";
                 SaveLoadOrDelete(inputFile);
                 break;
@@ -389,8 +392,32 @@ public class Game {
         Date cur = new Date();
         try {
             ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file));
-            ObjectOutputStream recordInfo = new ObjectOutputStream(new FileOutputStream("record.txt"));
-            recordInfo.writeObject(cur);
+            switch (file) {
+                case "savefile.txt": {
+                    ObjectOutputStream recordInfo = new ObjectOutputStream
+                            (new FileOutputStream("record.txt"));
+                    recordInfo.writeObject(cur);
+                    break;
+                }
+                case "savefile1.txt": {
+                    ObjectOutputStream recordInfo = new ObjectOutputStream
+                            (new FileOutputStream("record1.txt"));
+                    recordInfo.writeObject(cur);
+                    break;
+                }
+                case "savefile2.txt": {
+                    ObjectOutputStream recordInfo = new ObjectOutputStream
+                            (new FileOutputStream("record2.txt"));
+                    recordInfo.writeObject(cur);
+                    break;
+                }
+                case "savefile3.txt": {
+                    ObjectOutputStream recordInfo = new ObjectOutputStream
+                            (new FileOutputStream("record3.txt"));
+                    recordInfo.writeObject(cur);
+                    break;
+                }
+            }
             out.writeObject(finalWorldFrame);
             out.writeObject(Player.getPos());
             out.close();
@@ -401,7 +428,6 @@ public class Game {
     }
 
 
-
     private void drawStartUI() {
         initializeCanvas();
 
@@ -409,9 +435,16 @@ public class Game {
         Font font = new Font("Monaco", Font.BOLD, 60);
         StdDraw.setFont(font);
         StdDraw.text(WIDTH / 2, 3 * HEIGHT / 4, "CS61B: THE GAME");
-
         Font smallFont = new Font("Monaco", Font.BOLD, 30);
         StdDraw.setFont(smallFont);
+        String record = "record.txt";
+        File file = new File(record);
+        if (file.exists()) {
+            Date cur = readDateAndDrawInRecord("savefile.txt");
+            // that's how I wrote this function.
+            StdDraw.text(WIDTH / 2, HEIGHT / 2, "The last time you saved this game: ");
+            StdDraw.text(WIDTH / 2, HEIGHT / 2 - 2, cur.toString());
+        }
         StdDraw.text(WIDTH / 2, HEIGHT / 4 + 2, "New Game (N)");
         StdDraw.text(WIDTH / 2, HEIGHT / 4, "Load Game (L)");
         StdDraw.text(WIDTH / 2, HEIGHT / 4 - 2, "Select Another Game Record (S)");
@@ -432,11 +465,6 @@ public class Game {
         StdDraw.setFont(font);
         StdDraw.text(WIDTH / 2, 3 * HEIGHT / 4, "Congratulation! But you actually did nothing.");
 
-//        Font smallFont = new Font("Monaco", Font.BOLD, 30);
-//        StdDraw.setFont(smallFont);
-//        StdDraw.text(WIDTH / 2, HEIGHT / 4 + 2, "Record 1 Press (1)");
-//        StdDraw.text(WIDTH / 2, HEIGHT / 4, "Record 2 Press (2)");
-//        StdDraw.text(WIDTH / 2, HEIGHT / 4 - 2, "Record 3 Press (3)");
 
         StdDraw.show();
     }
@@ -454,6 +482,8 @@ public class Game {
         StdDraw.text(WIDTH / 2, HEIGHT / 4 + 2, "Record 1 Press (1)");
         StdDraw.text(WIDTH / 2, HEIGHT / 4, "Record 2 Press (2)");
         StdDraw.text(WIDTH / 2, HEIGHT / 4 - 2, "Record 3 Press (3)");
+        StdDraw.text(WIDTH / 2, HEIGHT / 4 - 4, "Quit (q)");
+
 
         StdDraw.show();
     }
@@ -462,24 +492,83 @@ public class Game {
         initializeCanvas();
         Font font = new Font("Monaco", Font.BOLD, 60);
         StdDraw.setFont(font);
-        StdDraw.text(WIDTH / 2, 3 * HEIGHT / 4, "Select your action to Record");
-        if (fileSavedTime.containsKey(input)) {
-            StdDraw.text(WIDTH / 2, HEIGHT / 2, "This record saved lastly at: "
-                    + fileSavedTime.get(input).toString());
-            Font smallFont = new Font("Monaco", Font.BOLD, 30);
-            StdDraw.setFont(smallFont);
-            StdDraw.text(WIDTH / 2, HEIGHT / 4 + 2, "Start new game (s)");
-            StdDraw.text(WIDTH / 2, HEIGHT / 4, "Load Game (L)");
-            StdDraw.text(WIDTH / 2, HEIGHT / 4 - 2, "Quit (q)");
-        } else {
-            Font smallFont = new Font("Monaco", Font.BOLD, 30);
-            StdDraw.setFont(smallFont);
-            StdDraw.text(WIDTH / 2, HEIGHT / 4 + 2, "Start new game (s)");
-            StdDraw.text(WIDTH / 2, HEIGHT / 4, "Load Game (L)");
-            StdDraw.text(WIDTH / 2, HEIGHT / 4 - 2, "Quit (q)");
-        }
+        StdDraw.text(WIDTH / 2, 3 * HEIGHT / 4, "Select your action to this record");
+        readDateAndDrawInRecord(input);
         StdDraw.show();
     }
+
+    private Date readDateAndDrawInRecord(String input) {
+        try {
+            switch (input) {
+                case "savefile.txt": {
+                    File file = new File("record.txt");
+                    if (file.exists()) {
+                        ObjectInputStream in = new ObjectInputStream(new FileInputStream("record.txt"));
+                        Date cur = (Date) in.readObject();
+                        return cur;
+                    }
+                    break;
+                }
+                case "savefile1.txt": {
+                    File file = new File("record1.txt");
+                    if (file.exists()) {
+                        ObjectInputStream in = new ObjectInputStream(new FileInputStream("record1.txt"));
+                        Date cur = (Date) in.readObject();
+                        drawSLDHelperExist(cur);
+                    } else {
+                        drawSLDHelperNotExist();
+                    }
+                    break;
+                }
+                case "savefile2.txt": {
+                    File file = new File("record2.txt");
+                    if (file.exists()) {
+                        ObjectInputStream in = new ObjectInputStream(new FileInputStream("record2.txt"));
+                        Date cur = (Date) in.readObject();
+                        drawSLDHelperExist(cur);
+                    } else {
+                        drawSLDHelperNotExist();
+                    }
+                    break;
+                }
+                case "savefile3.txt": {
+                    File file = new File("record3.txt");
+                    if (file.exists()) {
+                        ObjectInputStream in = new ObjectInputStream(new FileInputStream("record3.txt"));
+                        Date cur = (Date) in.readObject();
+                        drawSLDHelperExist(cur);
+                    } else {
+                        drawSLDHelperNotExist();
+                    }
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
+    private void drawSLDHelperExist(Date cur) {
+
+        Font smallFont = new Font("Monaco", Font.BOLD, 30);
+        StdDraw.setFont(smallFont);
+        StdDraw.text(WIDTH / 2, HEIGHT / 2, "This record saved lastly at: ");
+        StdDraw.text(WIDTH / 2, HEIGHT / 2 - 2, cur.toString());
+        StdDraw.text(WIDTH / 2, HEIGHT / 4 + 2, "Start new game (s)");
+        StdDraw.text(WIDTH / 2, HEIGHT / 4, "Load Game (L)");
+        StdDraw.text(WIDTH / 2, HEIGHT / 4 - 2, "Quit (q)");
+    }
+    private void drawSLDHelperNotExist() {
+        Font smallFont = new Font("Monaco", Font.BOLD, 30);
+        StdDraw.setFont(smallFont);
+        StdDraw.text(WIDTH / 2, HEIGHT / 2, "This record is new. ");
+        StdDraw.text(WIDTH / 2, HEIGHT / 4, "Start new game (s)");
+        StdDraw.text(WIDTH / 2, HEIGHT / 4 - 2, "Quit (q)");
+    }
+
+
 
     private void drawSeedInput(long res) {
         if (res == 0) {
