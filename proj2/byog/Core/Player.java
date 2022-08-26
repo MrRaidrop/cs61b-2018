@@ -2,8 +2,8 @@ package byog.Core;
 
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
+import edu.princeton.cs.introcs.StdDraw;
 
-import javax.swing.text.Position;
 import java.util.ArrayList;
 
 public class Player {
@@ -46,5 +46,6 @@ public class Player {
             newPos.drawTile(world, Tileset.PLAYER);
             pos = newPos;
         }
+
     }
 }

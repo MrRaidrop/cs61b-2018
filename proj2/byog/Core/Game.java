@@ -8,6 +8,8 @@ import org.junit.Test;
 
 import java.awt.*;
 import java.io.*;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 
 public class Game {
@@ -16,7 +18,8 @@ public class Game {
     public static final int WIDTH = 100;
     public static final int HEIGHT = 50;
     private int stringCount = 0;
-
+    private int maxRoomNum = 18;
+    private HashMap<String, Date> fileSavedTime = new HashMap<>();
 
     /**
      * Method used for playing a fresh game. The game should start from the main menu.
@@ -32,12 +35,20 @@ public class Game {
                 loadGame();
                 break;
             }
+            case 's': {
+                SelectAnotherGame();
+                break;
+            }
             case 'q': {
                 quitGame();
                 break;
             }
         }
 
+    }
+    @Test
+    public void test() {
+        playWithKeyboard();
     }
 
     /**
@@ -124,17 +135,24 @@ public class Game {
         TETile[][] world = new TETile[WIDTH][HEIGHT];
         long seed = getSeedInput();
         StdDraw.clear();
-        MapGenerator mg = new MapGenerator(WIDTH, HEIGHT, 15, world, seed);
+        MapGenerator mg = new MapGenerator(WIDTH, HEIGHT, maxRoomNum, world, seed);
 
         play(world);
-        saveGame(world);
     }
     private void startGame(TETile[][] world, String input, long seed) {
         StdDraw.clear();
-        MapGenerator mg = new MapGenerator(WIDTH, HEIGHT, 15, world, seed);
+        MapGenerator mg = new MapGenerator(WIDTH, HEIGHT, maxRoomNum, world, seed);
 
         play(world, input);
-        saveGame(world);
+    }
+
+    private void startAnotherGame(String input) {
+        TETile[][] world = new TETile[WIDTH][HEIGHT];
+        long seed = getSeedInput();
+        StdDraw.clear();
+        MapGenerator mg = new MapGenerator(WIDTH, HEIGHT, maxRoomNum, world, seed);
+
+        playAnother(world, input);
     }
 
     private long getSeedInput() {
@@ -183,7 +201,7 @@ public class Game {
                 continue;
             }
             c = Character.toLowerCase(StdDraw.nextKeyTyped());
-            if (c == 'n' || c == 'l' || c == 'q') {
+            if (c == 'n' || c == 'l' || c == 'q' || c == 's') {
                 break;
             }
         }
@@ -201,6 +219,75 @@ public class Game {
         play(finalWorldFrame, input);
         return finalWorldFrame;
     }
+
+    private TETile[][] loadAnotherGame(String input) {
+        TETile[][] finalWorldFrame;
+        finalWorldFrame = getSavedGame(input);
+        playAnother(finalWorldFrame, input);
+        return finalWorldFrame;
+    }
+
+    private void SelectAnotherGame() {
+        drawSelecttUI();
+        while (true) {
+            if (!StdDraw.hasNextKeyTyped()) {
+                continue;
+            }
+
+            char c = StdDraw.nextKeyTyped();
+
+            if (c == '1' || c == '2' || c == '3') {
+                String inputFile = "savefile" + c + ".txt";
+                SaveLoadOrDelete(inputFile);
+                break;
+            }
+        }
+    }
+
+    private void SaveLoadOrDelete(String inputFile) {
+        drawSLD(inputFile);
+        while (true) {
+            if (!StdDraw.hasNextKeyTyped()) {
+                continue;
+            }
+            char c = Character.toLowerCase(StdDraw.nextKeyTyped());
+            if (c == 's' || c == 'l' || c == 'q') {
+                if (c == 's') {
+                    startAnotherGame(inputFile);
+                    break;
+                } else if (c == 'q') {
+                    quitGame();
+                } else {
+                    loadAnotherGame(inputFile);
+                    break;
+                }
+            }
+        }
+    }
+    private void drawSLD(String input) {
+        StdDraw.clear();
+        initializeCanvas();
+        Font font = new Font("Monaco", Font.BOLD, 60);
+        StdDraw.setFont(font);
+        StdDraw.text(WIDTH / 2, 3 * HEIGHT / 4, "Select your action to Record");
+        if (fileSavedTime.containsKey(input)) {
+            StdDraw.text(WIDTH / 2, HEIGHT / 2, "This record saved lastly at: "
+                    + fileSavedTime.get(input).toString());
+            Font smallFont = new Font("Monaco", Font.BOLD, 30);
+            StdDraw.setFont(smallFont);
+            StdDraw.text(WIDTH / 2, HEIGHT / 4 + 2, "Start new game (s)");
+            StdDraw.text(WIDTH / 2, HEIGHT / 4, "Load Game (L)");
+            StdDraw.text(WIDTH / 2, HEIGHT / 4 - 2, "Quit (q)");
+        } else {
+            Font smallFont = new Font("Monaco", Font.BOLD, 30);
+            StdDraw.setFont(smallFont);
+            StdDraw.text(WIDTH / 2, HEIGHT / 4 + 2, "Start new game (s)");
+            StdDraw.text(WIDTH / 2, HEIGHT / 4, "Load Game (L)");
+            StdDraw.text(WIDTH / 2, HEIGHT / 4 - 2, "Quit (q)");
+        }
+        StdDraw.show();
+    }
+
 
     private position getInitPlayerPos(TETile[][] finalWorldFrame) {
         for (int x = 0; x < WIDTH; x += 1) {
@@ -227,6 +314,54 @@ public class Game {
             char c = Character.toLowerCase(StdDraw.nextKeyTyped());
             if (c == 'q' && pre == ':') {
                 saveGame(finalWorldFrame);
+                System.exit(0);
+            }
+            switch (c) {
+                case 'w': {
+
+                    Player.walkUp(finalWorldFrame);
+                    ter.renderFrame(finalWorldFrame);
+                    break;
+                }
+                case 's': {
+                    Player.walkDown(finalWorldFrame);
+                    ter.renderFrame(finalWorldFrame);
+                    break;
+                }
+                case 'a': {
+                    Player.walkLeft(finalWorldFrame);
+                    ter.renderFrame(finalWorldFrame);
+                    break;
+                }
+                case 'd': {
+                    Player.walkRight(finalWorldFrame);
+                    ter.renderFrame(finalWorldFrame);
+                    break;
+                }
+                default: {
+                    pre = c;
+                }
+            }
+
+        }
+    }
+
+
+
+    private void playAnother(TETile[][] finalWorldFrame, String file) {
+        StdDraw.disableDoubleBuffering();
+        StdDraw.enableDoubleBuffering();
+        ter.initialize(WIDTH, HEIGHT);
+        ter.renderFrame(finalWorldFrame);
+        Player.setPos(getInitPlayerPos(finalWorldFrame));
+        char pre = 'c';
+        while(true) {
+            if (!StdDraw.hasNextKeyTyped()) {
+                continue;
+            }
+            char c = Character.toLowerCase(StdDraw.nextKeyTyped());
+            if (c == 'q' && pre == ':') {
+                saveAnotherGame(finalWorldFrame, file);
                 System.exit(0);
             }
             switch (c) {
@@ -274,7 +409,6 @@ public class Game {
                 case 'w': {
                     Player.walkUp(finalWorldFrame);
                     ter.renderFrame(finalWorldFrame);
-                    StdDraw.pause(3000);
                     break;
                 }
                 case 's': {
@@ -315,19 +449,46 @@ public class Game {
         return finalWorldFrame;
     }
 
+
+    private TETile[][] getSavedGame(String input) {
+        TETile[][] finalWorldFrame = new TETile[WIDTH][HEIGHT];
+        try {
+            ObjectInputStream in = new ObjectInputStream(new FileInputStream(input));
+            finalWorldFrame = (TETile[][]) in.readObject();
+            Player.setPos((position) in.readObject());
+            in.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        return finalWorldFrame;
+    }
+
+
+
     private void quitGame() {
         System.exit(0);
     }
 
-    @Test
-    public void test() {
-        String s = "1234lasdwasdw:qdads";
-        playWithInputString(s);
-    }
+
 
     private void saveGame(TETile[][] finalWorldFrame) {
         try {
             ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("savefile.txt"));
+            out.writeObject(finalWorldFrame);
+            out.writeObject(Player.getPos());
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void saveAnotherGame(TETile[][] finalWorldFrame , String file) {
+        Date cur = new Date();
+        try {
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file));
             out.writeObject(finalWorldFrame);
             out.writeObject(Player.getPos());
             out.close();
@@ -351,12 +512,51 @@ public class Game {
         StdDraw.setFont(smallFont);
         StdDraw.text(WIDTH / 2, HEIGHT / 4 + 2, "New Game (N)");
         StdDraw.text(WIDTH / 2, HEIGHT / 4, "Load Game (L)");
-        StdDraw.text(WIDTH / 2, HEIGHT / 4 - 2, "Quit (Q)");
+        StdDraw.text(WIDTH / 2, HEIGHT / 4 - 2, "Select Another Game Record (S)");
+        StdDraw.text(WIDTH / 2, HEIGHT / 4 - 4, "Quit (Q)");
 
         StdDraw.show();
     }
 
-    private void initializeCanvas() {
+    static void drawEnd() {
+        StdDraw.clear();
+        StdDraw.setCanvasSize(WIDTH * 16, (HEIGHT + 1) * 16);
+        StdDraw.setXscale(0, WIDTH);
+        StdDraw.setYscale(0, HEIGHT + 1);
+        StdDraw.clear(Color.BLACK);
+        StdDraw.enableDoubleBuffering();
+        StdDraw.setPenColor(Color.WHITE);
+        Font font = new Font("Monaco", Font.BOLD, 60);
+        StdDraw.setFont(font);
+        StdDraw.text(WIDTH / 2, 3 * HEIGHT / 4, "Congratulation! But you actually did nothing.");
+
+//        Font smallFont = new Font("Monaco", Font.BOLD, 30);
+//        StdDraw.setFont(smallFont);
+//        StdDraw.text(WIDTH / 2, HEIGHT / 4 + 2, "Record 1 Press (1)");
+//        StdDraw.text(WIDTH / 2, HEIGHT / 4, "Record 2 Press (2)");
+//        StdDraw.text(WIDTH / 2, HEIGHT / 4 - 2, "Record 3 Press (3)");
+
+        StdDraw.show();
+    }
+
+
+    private void drawSelecttUI() {
+        StdDraw.clear();
+        initializeCanvas();
+        Font font = new Font("Monaco", Font.BOLD, 60);
+        StdDraw.setFont(font);
+        StdDraw.text(WIDTH / 2, 3 * HEIGHT / 4, "CS61B: THE GAME");
+
+        Font smallFont = new Font("Monaco", Font.BOLD, 30);
+        StdDraw.setFont(smallFont);
+        StdDraw.text(WIDTH / 2, HEIGHT / 4 + 2, "Record 1 Press (1)");
+        StdDraw.text(WIDTH / 2, HEIGHT / 4, "Record 2 Press (2)");
+        StdDraw.text(WIDTH / 2, HEIGHT / 4 - 2, "Record 3 Press (3)");
+
+        StdDraw.show();
+    }
+
+        private void initializeCanvas() {
         StdDraw.setCanvasSize(WIDTH * 16, (HEIGHT + 1) * 16);
         StdDraw.setXscale(0, WIDTH);
         StdDraw.setYscale(0, HEIGHT + 1);

@@ -12,7 +12,7 @@ public class MapGenerator {
     int maplength;
     int maxRoomNum;
     private static final int minroomsize = 2;
-    private static final int maxroomsize = 10;
+    private static final int maxroomsize = 14;
     private static position[][] allPos;
     ArrayList<Square> squares;
     private int numberofrooms;
@@ -34,7 +34,7 @@ public class MapGenerator {
         RANDOM = new Random(seed);
         for (int x = 0; x < mapwidth; x += 1) {
             for (int y = 0; y < maplength; y += 1) {
-                world1[x][y] = Tileset.GRASS;
+                world1[x][y] = Tileset.NOTHING;
             }
         }
         generateSquares(world1);
