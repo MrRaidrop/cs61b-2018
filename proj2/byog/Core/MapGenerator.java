@@ -27,7 +27,6 @@ public class MapGenerator {
 
 
 
-    // reference: https://zhuanlan.zhihu.com/p/27381213
     public MapGenerator(int mapwidth1, int maplength1, int maxRoomNum1, TETile[][] world1, long seed) {
         mapwidth = mapwidth1;
         maplength = maplength1;
@@ -87,6 +86,7 @@ public class MapGenerator {
                                     (world1[x][y - 1].equals(Tileset.WALL) &&
                                             world1[x][y + 1].equals(Tileset.WALL)))) {
                         world1[x][y] = Tileset.LOCKED_DOOR;
+                        // make sure the goal position will not generate on an unreachable place.
                         goalPos = new position(x, y);
                         try {
                             ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("goalPos.txt"));

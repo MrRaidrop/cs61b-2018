@@ -563,7 +563,7 @@ public class Game {
     private void drawSLDHelperNotExist() {
         Font smallFont = new Font("Monaco", Font.BOLD, 30);
         StdDraw.setFont(smallFont);
-        StdDraw.text(WIDTH / 2, HEIGHT / 2, "This record is new. ");
+        StdDraw.text(WIDTH / 2, HEIGHT / 2, "This record is new.");
         StdDraw.text(WIDTH / 2, HEIGHT / 4, "Start new game (s)");
         StdDraw.text(WIDTH / 2, HEIGHT / 4 - 2, "Quit (q)");
     }
