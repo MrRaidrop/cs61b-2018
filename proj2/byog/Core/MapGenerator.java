@@ -1,6 +1,7 @@
 package byog.Core;
 
 
+import java.io.*;
 import java.util.Random;
 import java.util.List;
 import java.util.ArrayList;
@@ -42,7 +43,6 @@ public class MapGenerator {
         generateSquaresAgain(world1);
         getAllPos(world1);
         setPlayerAndGoal(world1);
-
     }
 
     void getAllPos(TETile[][] world1) {
@@ -88,6 +88,13 @@ public class MapGenerator {
                                             world1[x][y + 1].equals(Tileset.WALL)))) {
                         world1[x][y] = Tileset.LOCKED_DOOR;
                         goalPos = new position(x, y);
+                        try {
+                            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("goalPos.txt"));
+                            out.writeObject(goalPos);
+                            out.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                         goalSeted = true;
                     }
                 }
