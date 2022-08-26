@@ -389,6 +389,8 @@ public class Game {
         Date cur = new Date();
         try {
             ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file));
+            ObjectOutputStream recordInfo = new ObjectOutputStream(new FileOutputStream("record.txt"));
+            recordInfo.writeObject(cur);
             out.writeObject(finalWorldFrame);
             out.writeObject(Player.getPos());
             out.close();
