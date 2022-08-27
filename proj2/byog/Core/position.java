@@ -12,9 +12,6 @@ public class position implements Serializable {
     int Ypos;
     boolean blocked;
     boolean damage;
-    //private static final long SEED;
-    private static final Random RANDOM = new Random(); //plan B
-    //private static final Random RANDOM = new Random(SEED);
 
     public position(int x, int y, boolean blockedornot) {
         this.Xpos = x;
@@ -53,11 +50,6 @@ public class position implements Serializable {
         return Linepos;
     }
 
-    public static position positionRANDOMGenerator(int x1, int x2, int y1, int y2) {
-        int startpointX = RandomUtils.uniform(RANDOM, x1, x2);
-        int startpointY = RandomUtils.uniform(RANDOM, y1, y2);
-        return new position(startpointX, startpointY);
-    }
     public double awayfrom(position p2) {
         int x = (Xpos - p2.Xpos) * (Xpos - p2.Xpos);
         int y = (Ypos - p2.Ypos) * (Ypos - p2.Ypos);
@@ -72,11 +64,11 @@ public class position implements Serializable {
     }
 
     public void setBlocked(boolean blocked) {
-        this.blocked = true;
+        this.blocked = blocked;
     }
 
     public void setDamage(boolean damage) {
-        this.damage = true;
+        this.damage = damage;
     }
     public boolean isSamePosition(position point1, position point2){
         if(point1.getX() == point2.getX() && point1.getY() == point2.getY())
@@ -148,5 +140,4 @@ public class position implements Serializable {
         }
         return res;
     }
-
 }
