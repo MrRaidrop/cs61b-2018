@@ -41,7 +41,6 @@ public class GraphBuildingHandler extends DefaultHandler {
                     "secondary_link", "tertiary_link"));
     private String activeState = "";
     int count1 = 0;
-    int count2 = 0;
     private boolean wayValidState;
     private final GraphDB g;
     private ArrayList<Point> curNodes = new ArrayList<>();
@@ -49,7 +48,6 @@ public class GraphBuildingHandler extends DefaultHandler {
 
     private String name;
     private long wayID;
-    ArrayList<GraphDB.Edge> curEdges = new ArrayList<>();
 
 
 
@@ -129,8 +127,13 @@ public class GraphBuildingHandler extends DefaultHandler {
         } else if (activeState.equals("node") && qName.equals("tag") && attributes.getValue("k")
                 .equals("name")) {
             /* While looking at a node, we found a <tag...> with k="name". */
+            String dirtyName = attributes.getValue("v");
             String name = GraphDB.cleanString(attributes.getValue("v"));
             g.addLocationsWithName(name, curNode.id);
+            g.t.insert(name);
+            g.nameToDirtyName.put(name, dirtyName);
+            curNode.setName(name);
+            g.locations.put(curNode.id, curNode); // put all the node in the location map
 //            System.out.println("Node's name: " + curNode.name);
 //            System.out.println("Node's id: " + curNode.id);
 //            System.out.println("Node's lon: " + curNode.x);

@@ -6,10 +6,7 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 /**
  * Graph for storing all of the intersection (vertex) and road (edge) information.
@@ -34,15 +31,12 @@ public class GraphDB implements AStarGraph<Long>{
     KdTree nodesTree = new KdTree(); // for nearest finding
     HashMap<Long, Point> activeNodes = new HashMap<>(); // nodes on the valid ways
     HashMap<Long, Point> nodes = new HashMap<>(); // all node on the map
-//    private int cleanCount = 0;
-//    private int nodecount = 0;
-//    private int adjcount = 0;
-
 
     HashMap<Long, Point> locations = new HashMap<>(); // all node on the map
     HashMap<String, ArrayList<Point>> locationsWithName = new HashMap<>();
+    HashMap<String, String> nameToDirtyName = new HashMap<>();
+    Trie t = new Trie();
     HashMap<Long, ArrayList<Long>> adjNodes = new HashMap<>(); // all adj nodes
-    HashMap<String, ArrayList<Point>> names = new HashMap<>(); // in case one name has multi pos
     HashMap<Long, ArrayList<WeightedEdge<Long>>> adjEdge = new HashMap<>();
 
     public GraphDB(String dbPath) {
@@ -197,6 +191,37 @@ public class GraphDB implements AStarGraph<Long>{
             throw new IllegalArgumentException("Vertex " + v + "is not in the graph");
         }
     }
+    public List<String> getLocationsByPrefix(String pre) {
+        List<String> cleanNames = t.searchPrefix(pre);
+        List<String> res = new ArrayList<>();
+        for (String c : cleanNames) {
+            nameToDirtyName.get(c);
+        }
+        return res;
+    }
+    public List<Map<String, Object>> getLocations(String locationName) {
+        List<Map<String, Object>> res = new LinkedList<>();
+        if (!locations.containsKey(locationName)) {
+            return res;
+        }
+        for (Point p : locationsWithName.get(locationName)) {
+            res.add(getNameNodeAsMap(p.getId()));
+        }
+        return res;
+    }
+    public Map<String, Object> getNameNodeAsMap(long id) {
+        Point n = locations.get(id);
+        Map<String, Object> res = new HashMap<>();
+        res.put("id", n.id);
+        res.put("lat", n.y);
+        res.put("lon", n.x);
+        res.put("name", n.name);
+
+        return res;
+
+
+    }
+
 
     String getWayName(long v, long w) {
         validateVertex(v);
