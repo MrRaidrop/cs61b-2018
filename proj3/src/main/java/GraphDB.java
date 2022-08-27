@@ -40,6 +40,7 @@ public class GraphDB implements AStarGraph<Long>{
 
 
     HashMap<Long, Point> locations = new HashMap<>(); // all node on the map
+    HashMap<String, ArrayList<Point>> locationsWithName = new HashMap<>();
     HashMap<Long, ArrayList<Long>> adjNodes = new HashMap<>(); // all adj nodes
     HashMap<String, ArrayList<Point>> names = new HashMap<>(); // in case one name has multi pos
     HashMap<Long, ArrayList<WeightedEdge<Long>>> adjEdge = new HashMap<>();
@@ -219,6 +220,15 @@ public class GraphDB implements AStarGraph<Long>{
         adjNodes.put(n.id, new ArrayList<>());
         adjEdge.put(n.id, new ArrayList<>());
         locations.put(n.id, n);
+    }
+    void addLocationsWithName(String name, long ID) {
+        if (!locationsWithName.containsKey(name)) {
+            ArrayList<Point> curList = new ArrayList<>();
+            curList.add(locations.get(ID));
+            locationsWithName.put(name, curList);
+        } else {
+            locationsWithName.get(name).add(locations.get(ID));
+        }
     }
 
     /**

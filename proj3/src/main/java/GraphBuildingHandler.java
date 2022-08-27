@@ -98,9 +98,8 @@ public class GraphBuildingHandler extends DefaultHandler {
             //System.out.println("Id of a node in this way: " + attributes.getValue("ref"));
 
             long nodeId = Long.parseLong(attributes.getValue("ref"));
-            curNode = g.locations.get(nodeId);
+            curNode = g.nodes.get(nodeId);
             curNodes.add(curNode);
-
 
             /* Hint1: It would be useful to remember what was the last node in this way. */
             /* Hint2: Not all ways are valid. So, directly connecting the nodes here would be
@@ -130,10 +129,8 @@ public class GraphBuildingHandler extends DefaultHandler {
         } else if (activeState.equals("node") && qName.equals("tag") && attributes.getValue("k")
                 .equals("name")) {
             /* While looking at a node, we found a <tag...> with k="name". */
-            String name = attributes.getValue("v");
-            curNode.setName(name);
-            g.locations.put(curNode.id, curNode); // put all the node in the location map
-
+            String name = GraphDB.cleanString(attributes.getValue("v"));
+            g.addLocationsWithName(name, curNode.id);
 //            System.out.println("Node's name: " + curNode.name);
 //            System.out.println("Node's id: " + curNode.id);
 //            System.out.println("Node's lon: " + curNode.x);
