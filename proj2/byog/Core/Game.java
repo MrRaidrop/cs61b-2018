@@ -3,9 +3,13 @@ package byog.Core;
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
+import edu.princeton.cs.introcs.StdAudio;
 import edu.princeton.cs.introcs.StdDraw;
 import org.junit.Test;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import java.awt.*;
 import java.io.*;
 import java.util.Date;
@@ -146,6 +150,7 @@ public class Game {
         play(world, input);
     }
 
+
     private void startAnotherGame(String input) {
         TETile[][] world = new TETile[WIDTH][HEIGHT];
         long seed = getSeedInput();
@@ -267,7 +272,6 @@ public class Game {
     }
 
 
-
     private void playAnother(TETile[][] finalWorldFrame, String file) {
         StdDraw.disableDoubleBuffering();
         StdDraw.enableDoubleBuffering();
@@ -276,37 +280,46 @@ public class Game {
         Player.setPos(getInitPlayerPos(finalWorldFrame));
         char pre = 'c';
         while(true) {
-            if (!StdDraw.hasNextKeyTyped()) {
+            if (!StdDraw.hasNextKeyTyped() && !StdDraw.isMousePressed()) {
                 continue;
             }
-            char c = Character.toLowerCase(StdDraw.nextKeyTyped());
-            if (c == 'q' && pre == ':') {
-                saveAnotherGame(finalWorldFrame, file);
-                System.exit(0);
+
+
+            if (StdDraw.isMousePressed()) {
+                int x = (int) (StdDraw.mouseX());
+                int y = (int) (StdDraw.mouseY());
+                ShowTileInfo(finalWorldFrame, x, y);
             }
-            switch (c) {
-                case 'w': {
-                    Player.walkUp(finalWorldFrame);
-                    ter.renderFrame(finalWorldFrame);
-                    break;
+            if (StdDraw.hasNextKeyTyped()) {
+                char c = Character.toLowerCase(StdDraw.nextKeyTyped());
+                if (c == 'q' && pre == ':') {
+                    saveAnotherGame(finalWorldFrame, file);
+                    System.exit(0);
                 }
-                case 's': {
-                    Player.walkDown(finalWorldFrame);
-                    ter.renderFrame(finalWorldFrame);
-                    break;
-                }
-                case 'a': {
-                    Player.walkLeft(finalWorldFrame);
-                    ter.renderFrame(finalWorldFrame);
-                    break;
-                }
-                case 'd': {
-                    Player.walkRight(finalWorldFrame);
-                    ter.renderFrame(finalWorldFrame);
-                    break;
-                }
-                default: {
-                    pre = c;
+                switch (c) {
+                    case 'w': {
+                        Player.walkUp(finalWorldFrame);
+                        ter.renderFrame(finalWorldFrame);
+                        break;
+                    }
+                    case 's': {
+                        Player.walkDown(finalWorldFrame);
+                        ter.renderFrame(finalWorldFrame);
+                        break;
+                    }
+                    case 'a': {
+                        Player.walkLeft(finalWorldFrame);
+                        ter.renderFrame(finalWorldFrame);
+                        break;
+                    }
+                    case 'd': {
+                        Player.walkRight(finalWorldFrame);
+                        ter.renderFrame(finalWorldFrame);
+                        break;
+                    }
+                    default: {
+                        pre = c;
+                    }
                 }
             }
 
@@ -427,10 +440,38 @@ public class Game {
 
     }
 
+    private void ShowTileInfo(TETile[][] finalWorldFrame, int x, int y) {
+        String description = finalWorldFrame[x + 5][y].getDescription();
+        StdDraw.setPenColor(Color.DARK_GRAY);
+        StdDraw.filledRectangle(8, HEIGHT - 1, 4, 1);
+        StdDraw.setPenColor(Color.WHITE);
+        StdDraw.text(8, HEIGHT-1, description);
+        StdDraw.show();
+    }
+
+    public static synchronized void playSound(final String url) {
+        new Thread(new Runnable() {
+            // The wrapper thread is unnecessary, unless it blocks on the
+            // Clip finishing; see comments.
+            public void run() {
+                try {
+                    Clip clip = AudioSystem.getClip();
+                    AudioInputStream inputStream = AudioSystem.getAudioInputStream(
+                            Main.class.getResourceAsStream(url));
+                    clip.open(inputStream);
+                    clip.start();
+                } catch (Exception e) {
+                    System.err.println(e.getMessage());
+                }
+            }
+        }).start();
+    }
+
 
     private void drawStartUI() {
         initializeCanvas();
-
+        //playSound("/8_bit_adventure.wav");
+        StdAudio.play("/8_bit_adventure.wav");
 
         Font font = new Font("Monaco", Font.BOLD, 60);
         StdDraw.setFont(font);
@@ -454,19 +495,15 @@ public class Game {
     }
 
     static void drawEnd() {
-        StdDraw.clear();
-        StdDraw.setCanvasSize(WIDTH * 16, (HEIGHT + 1) * 16);
-        StdDraw.setXscale(0, WIDTH);
-        StdDraw.setYscale(0, HEIGHT + 1);
-        StdDraw.clear(Color.BLACK);
-        StdDraw.enableDoubleBuffering();
+        StdDraw.setPenColor(Color.GREEN);
+        StdDraw.filledRectangle(WIDTH / 2, HEIGHT / 2, WIDTH / 2 , 5);
         StdDraw.setPenColor(Color.WHITE);
         Font font = new Font("Monaco", Font.BOLD, 60);
         StdDraw.setFont(font);
-        StdDraw.text(WIDTH / 2, 3 * HEIGHT / 4, "Congratulation! But you actually did nothing.");
-
-
+        StdDraw.text(WIDTH / 2, HEIGHT / 2, "Congratulation! But you actually did nothing.");
         StdDraw.show();
+        StdDraw.pause(10000);
+        System.exit(0);
     }
 
 
@@ -476,17 +513,15 @@ public class Game {
         Font font = new Font("Monaco", Font.BOLD, 60);
         StdDraw.setFont(font);
         StdDraw.text(WIDTH / 2, 3 * HEIGHT / 4, "CS61B: THE GAME");
-
         Font smallFont = new Font("Monaco", Font.BOLD, 30);
         StdDraw.setFont(smallFont);
         StdDraw.text(WIDTH / 2, HEIGHT / 4 + 2, "Record 1 Press (1)");
         StdDraw.text(WIDTH / 2, HEIGHT / 4, "Record 2 Press (2)");
         StdDraw.text(WIDTH / 2, HEIGHT / 4 - 2, "Record 3 Press (3)");
         StdDraw.text(WIDTH / 2, HEIGHT / 4 - 4, "Quit (q)");
-
-
         StdDraw.show();
     }
+
     private void drawSLD(String input) {
         StdDraw.clear();
         initializeCanvas();

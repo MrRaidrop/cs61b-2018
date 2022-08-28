@@ -109,34 +109,19 @@ public class position implements Serializable {
         return Math.pow((Xpos - other.getX()), 2) + Math.pow((Ypos - other.getY()), 2);
     }
     //may use later
-    //reference https://github.com/lijian12345/cs61b-sp18/blob/master/proj2/byog/Core/Position.java
-    private List<position> getAroundPositions(int width, int height, boolean isAll) {
+    private List<position> getReachableNeighbour(TETile[][] world, int width, int height) {
         List<position> res = new ArrayList<>();
-        if (Xpos + 1 < width) {
+        if (Xpos + 1 < width && !world[Xpos + 1][Ypos].equals(Tileset.WALL)) {
             res.add(new position(Xpos + 1, Ypos));
         }
-        if (Xpos - 1 >= 0) {
+        if (Xpos - 1 >= 0 && !world[Xpos - 1][Ypos].equals(Tileset.WALL)) {
             res.add(new position(Xpos - 1, Ypos));
         }
-        if (Ypos + 1 < height) {
+        if (Ypos + 1 < height && !world[Xpos][Ypos + 1].equals(Tileset.WALL)) {
             res.add(new position(Xpos, Ypos + 1));
         }
-        if (Ypos - 1 >= 0) {
+        if (Ypos - 1 >= 0 && !world[Xpos][Ypos - 1].equals(Tileset.WALL)) {
             res.add(new position(Xpos, Ypos - 1));
-        }
-        if (isAll) {
-            if (Xpos + 1 < width && Ypos + 1 < height) {
-                res.add(new position(Xpos + 1, Ypos + 1));
-            }
-            if (Xpos - 1 >= 0 && Ypos + 1 < height) {
-                res.add(new position(Xpos - 1, Ypos + 1));
-            }
-            if (Xpos + 1 < width && Ypos - 1 >= 0) {
-                res.add(new position(Xpos + 1, Xpos - 1));
-            }
-            if (Xpos - 1 >= 0 && Ypos - 1 >= 0) {
-                res.add(new position(Xpos - 1, Ypos - 1));
-            }
         }
         return res;
     }

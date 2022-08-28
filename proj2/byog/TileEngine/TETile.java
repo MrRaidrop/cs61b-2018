@@ -108,6 +108,10 @@ public class TETile implements Serializable {
         return character;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
     /**
      * Description of the tile. Useful for displaying mouseover text or
      * testing that two tiles represent the same type of thing.

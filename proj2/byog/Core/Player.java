@@ -46,7 +46,7 @@ public class Player {
 
     private static void walk(TETile[][] world, position newPos) {
         if (newPos.distance(goal) == 0) {
-            System.exit(0);
+            Game.drawEnd();
         }
         if (newPos.isTile(world, Tileset.FLOOR)) {
             pos.drawTile(world, Tileset.FLOOR);
@@ -54,6 +54,11 @@ public class Player {
             pos = newPos;
         }
     }
+
+    static void autoFindPath(TETile[][] world, position goal) {
+        
+    }
+
 
     private static position getGoalPos() {
         try {
