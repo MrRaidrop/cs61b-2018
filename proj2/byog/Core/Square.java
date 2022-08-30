@@ -5,6 +5,8 @@ import byog.TileEngine.Tileset;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+
 /** Square class stores information of the four corner status of positions
  * and have method of drawing itself without wall and finding connectors.
  */
@@ -44,10 +46,10 @@ class Square {
             }
         }
     }
-    void drawSquareWallFirst(TETile[][] world1) {
+    void drawSquareWallFirst(TETile[][] world1, Random ran) {
         for (int x = x1 - 1; x < x2 + 1; x++) {
             for (int y = y2 - 1; y < y1 + 1; y++) {
-                world1[x][y] = Tileset.WALL;
+                world1[x][y] = MapGenerator.variant(Tileset.WALL, ran);
             }
         }
     }

@@ -123,7 +123,7 @@ public class MapGenerator {
                 S1.SquareRoom = position.SquarePositionGenerator
                         (S1.x1 + 1, S1.x2 - 1, S1.y2 + 1, S1.y1 - 1, false);
                 squares.add(S1);
-                S1.drawSquareWallFirst(world1);
+                S1.drawSquareWallFirst(world1, RANDOM);
                 S1.drawSquare(world1, Tileset.FLOOR);
             }
         }
@@ -139,7 +139,7 @@ public class MapGenerator {
     private void generateHalls(TETile[][] world1, List<Square> squares1) {
         hallways = new ArrayList<>();
         for (int i = 0; i < squares1.size() - 1; i++) {
-            hallways.add(drawLWay(world1, squares1.get(i), squares1.get(i + 1)));
+            hallways.add(drawLWay(world1, squares1.get(i), squares1.get(i + 1), RANDOM));
         }
         Hallway.fillLHallList(world1, hallways);
     }
@@ -186,25 +186,25 @@ public class MapGenerator {
         int insideY = RandomUtils.uniform(RANDOM, 0, S1.column) / 2 + S1.getCentre().Ypos;
         return new position(insideX, insideY);
     }
-    Hallway drawLWay(TETile[][] world1, Square S1, Square S2) {
+    Hallway drawLWay(TETile[][] world1, Square S1, Square S2, Random ran) {
         position p2 = randomInsidePos(S2);
         position p1 = randomInsidePos(S1);
         int key = RandomUtils.uniform(RANDOM, 0, 2);
         switch (key) {
             case 0: {  //draw Row way first.
                 position RowStart = position.smallerX(p1, p2);
-                position RowCorner = Hallway.addRowHall(world1, RowStart, Math.abs(p2.Xpos - p1.Xpos));
+                position RowCorner = Hallway.addRowHall(world1, RowStart, Math.abs(p2.Xpos - p1.Xpos), ran);
                 position ColumStart = position.smallerY(RowCorner, position.largerX(p1, p2));
-                Hallway.addColumHall(world1, ColumStart, Math.abs(p2.Ypos - p1.Ypos));
-                addCorner(world1, RowCorner);
+                Hallway.addColumHall(world1, ColumStart, Math.abs(p2.Ypos - p1.Ypos), ran);
+                addCorner(world1, RowCorner, RANDOM);
                 return new Hallway(RowCorner, RowStart, position.largerX(p1, p2), 0);
             }
             case 1: { //draw Colum way first.
                 position ColumStart = position.smallerY(p1, p2);
-                position ColumCorner = Hallway.addColumHall(world1, ColumStart, Math.abs(p2.Ypos - p1.Ypos));
+                position ColumCorner = Hallway.addColumHall(world1, ColumStart, Math.abs(p2.Ypos - p1.Ypos), ran);
                 position RowStart = position.smallerX(ColumCorner, position.largerY(p1, p2));
-                Hallway.addRowHall(world1, RowStart, Math.abs(p2.Xpos - p1.Xpos));
-                addCorner(world1, ColumCorner);
+                Hallway.addRowHall(world1, RowStart, Math.abs(p2.Xpos - p1.Xpos), ran);
+                addCorner(world1, ColumCorner, RANDOM);
                 return new Hallway(ColumCorner, ColumStart, position.largerY(p1, p2), 1);
             }
             default: {
@@ -212,13 +212,17 @@ public class MapGenerator {
             }
         }
     }
-        static void addCorner(TETile[][] world1, position corner) {
+    static void addCorner(TETile[][] world1, position corner, Random ran) {
         for (int i = corner.Xpos - 1; i < corner.Xpos + 1; i++) {
             for (int j = corner.Ypos - 1; j < corner.Ypos + 1; j++) {
-                world1[i][j] = Tileset.WALL;
+                world1[i][j] = variant(Tileset.WALL, ran);
             }
         }
         world1[corner.Xpos][corner.Ypos] = Tileset.FLOOR;
+    }
+
+    static TETile variant(TETile t, Random ran) {
+        return TETile.colorVariant(Tileset.WALL, 1, 33, 66, ran);
     }
 
     // helper method: judge if two line cross or not
