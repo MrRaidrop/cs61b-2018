@@ -13,6 +13,45 @@ public class position implements Serializable {
     boolean blocked;
     boolean damage;
 
+    class Edge{
+        position to;
+        position from;
+        double weight = 1;
+
+        public Edge(position to, position from) {
+            this.to = to;
+            this.from = from;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (!obj.getClass().equals(this.getClass())) {
+                return false;
+            }
+            Edge other = (Edge) obj;
+            if (other.from.equals(this.from) && other.to.equals(this.to)) {
+                return true;
+            }
+            return false;
+        }
+    }
+    List<Edge> getNeighbourEdge(TETile[][] world, int width, int height) {
+        List<Edge> res = new ArrayList<>();
+        if (Xpos + 1 < width && world[Xpos + 1][Ypos].equals(Tileset.FLOOR)) {
+            res.add(new Edge(new position(Xpos + 1, Ypos), this));
+        }
+        if (Xpos - 1 > 0 && world[Xpos - 1][Ypos].equals(Tileset.FLOOR)) {
+            res.add(new Edge(new position(Xpos - 1, Ypos), this));
+        }
+        if (Ypos + 1 < height && world[Xpos][Ypos + 1].equals(Tileset.FLOOR)) {
+            res.add(new Edge(new position(Xpos, Ypos + 1), this));
+        }
+        if (Ypos - 1 > 0 && world[Xpos][Ypos - 1].equals(Tileset.FLOOR)) {
+            res.add(new Edge(new position(Xpos, Ypos - 1), this));
+        }
+        return res;
+    }
+
     public position(int x, int y, boolean blockedornot) {
         this.Xpos = x;
         this.Ypos = y;
@@ -70,16 +109,23 @@ public class position implements Serializable {
     public void setDamage(boolean damage) {
         this.damage = damage;
     }
-    public boolean isSamePosition(position point1, position point2){
-        if(point1.getX() == point2.getX() && point1.getY() == point2.getY())
-            return true;
-        return false;
-    }
+
     public void drawTile(TETile[][] world1, TETile t) {
         world1[Xpos][Ypos] = t;
     }
     public boolean isTile(TETile[][] world1, TETile t) {
         return world1[Xpos][Ypos].equals(t);
+    }
+    @Override
+    public boolean equals(Object obj) {
+        if (!obj.getClass().equals(this.getClass())) {
+            return false;
+        }
+        position other = (position) obj;
+        if (other.Xpos == this.Xpos && other.Ypos == other.Ypos) {
+            return true;
+        }
+        return false;
     }
     public static position smallerX(position p1, position p2) {
         if (p1.Xpos > p2.Xpos) {
@@ -105,22 +151,18 @@ public class position implements Serializable {
         }
         return p2;
     }
-    double distance(position other) {
-        return Math.pow((Xpos - other.getX()), 2) + Math.pow((Ypos - other.getY()), 2);
-    }
-    //may use later
-    private List<position> getReachableNeighbour(TETile[][] world, int width, int height) {
+    List<position> getReachableNeighbour(TETile[][] world, int width, int height) {
         List<position> res = new ArrayList<>();
-        if (Xpos + 1 < width && !world[Xpos + 1][Ypos].equals(Tileset.WALL)) {
+        if (Xpos + 1 < width && world[Xpos + 1][Ypos].equals(Tileset.FLOOR)) {
             res.add(new position(Xpos + 1, Ypos));
         }
-        if (Xpos - 1 >= 0 && !world[Xpos - 1][Ypos].equals(Tileset.WALL)) {
+        if (Xpos - 1 >= 0 && world[Xpos - 1][Ypos].equals(Tileset.FLOOR)) {
             res.add(new position(Xpos - 1, Ypos));
         }
-        if (Ypos + 1 < height && !world[Xpos][Ypos + 1].equals(Tileset.WALL)) {
+        if (Ypos + 1 < height && world[Xpos][Ypos + 1].equals(Tileset.FLOOR)) {
             res.add(new position(Xpos, Ypos + 1));
         }
-        if (Ypos - 1 >= 0 && !world[Xpos][Ypos - 1].equals(Tileset.WALL)) {
+        if (Ypos - 1 >= 0 && world[Xpos][Ypos - 1].equals(Tileset.FLOOR)) {
             res.add(new position(Xpos, Ypos - 1));
         }
         return res;

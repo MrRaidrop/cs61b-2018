@@ -7,28 +7,35 @@ import edu.princeton.cs.introcs.StdAudio;
 import edu.princeton.cs.introcs.StdDraw;
 import org.junit.Test;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
+import javax.sound.sampled.*;
 import java.awt.*;
 import java.io.*;
+import java.net.MalformedURLException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 public class Game {
     TERenderer ter = new TERenderer();
+    MainTheme mt = new MainTheme();
+    GameTheme gt = new GameTheme();
     /* Feel free to change the width and height. */
     public static final int WIDTH = 100;
     public static final int HEIGHT = 50;
     private int stringCount = 0;
     private int maxRoomNum = 18;
     private HashMap<String, Date> fileSavedTime = new HashMap<>();
+    int lastClickX;
+    int lastClickY;
+
+    public Game() throws UnsupportedAudioFileException, LineUnavailableException, IOException {
+    }
 
     /**
      * Method used for playing a fresh game. The game should start from the main menu.
      */
-    public void playWithKeyboard() {
+    public void playWithKeyboard() throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         drawStartUI();
         switch (getFirstChar()) {
             case 'n': {
@@ -51,7 +58,7 @@ public class Game {
 
     }
     @Test
-    public void test() {
+    public void test() throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         playWithKeyboard();
     }
 
@@ -272,9 +279,13 @@ public class Game {
     }
 
 
+
+
     private void playAnother(TETile[][] finalWorldFrame, String file) {
+        mt.stop();
         StdDraw.disableDoubleBuffering();
         StdDraw.enableDoubleBuffering();
+        gt.play();
         ter.initialize(WIDTH, HEIGHT);
         ter.renderFrame(finalWorldFrame);
         Player.setPos(getInitPlayerPos(finalWorldFrame));
@@ -286,10 +297,25 @@ public class Game {
 
 
             if (StdDraw.isMousePressed()) {
-                int x = (int) (StdDraw.mouseX());
-                int y = (int) (StdDraw.mouseY());
-                ShowTileInfo(finalWorldFrame, x, y);
+                lastClickX = (int) (StdDraw.mouseX());
+                lastClickY = (int) (StdDraw.mouseY());
+                ShowTileInfo(finalWorldFrame, lastClickX, lastClickY);
+                if (finalWorldFrame[lastClickX + 5][lastClickY].equals(Tileset.FLOOR)) {
+                    Player.autoWalk(finalWorldFrame,
+                            new position(lastClickX + 5, lastClickY),
+                            WIDTH, HEIGHT, ter);
+                }
             }
+//            if (StdDraw.isMousePressed()) {
+//                int x = (int) (StdDraw.mouseX());
+//                int y = (int) (StdDraw.mouseY());
+//                ShowTileInfo(finalWorldFrame, x, y);
+//                if (x == lastClickX && y == lastClickY && finalWorldFrame[x][y].equals(Tileset.FLOOR)) {
+//                    position goalThisTime = new position(x, y);
+//                    Player.autoWalk(finalWorldFrame,goalThisTime, WIDTH, HEIGHT);
+//                }
+//
+//            }
             if (StdDraw.hasNextKeyTyped()) {
                 char c = Character.toLowerCase(StdDraw.nextKeyTyped());
                 if (c == 'q' && pre == ':') {
@@ -298,23 +324,19 @@ public class Game {
                 }
                 switch (c) {
                     case 'w': {
-                        Player.walkUp(finalWorldFrame);
-                        ter.renderFrame(finalWorldFrame);
+                        Player.walkUp(finalWorldFrame, ter);
                         break;
                     }
                     case 's': {
-                        Player.walkDown(finalWorldFrame);
-                        ter.renderFrame(finalWorldFrame);
+                        Player.walkDown(finalWorldFrame, ter);
                         break;
                     }
                     case 'a': {
-                        Player.walkLeft(finalWorldFrame);
-                        ter.renderFrame(finalWorldFrame);
+                        Player.walkLeft(finalWorldFrame,ter);
                         break;
                     }
                     case 'd': {
-                        Player.walkRight(finalWorldFrame);
-                        ter.renderFrame(finalWorldFrame);
+                        Player.walkRight(finalWorldFrame, ter);
                         break;
                     }
                     default: {
@@ -340,23 +362,20 @@ public class Game {
             }
             switch (c) {
                 case 'w': {
-                    Player.walkUp(finalWorldFrame);
-                    ter.renderFrame(finalWorldFrame);
+                    Player.walkUp(finalWorldFrame, ter);
+
                     break;
                 }
                 case 's': {
-                    Player.walkDown(finalWorldFrame);
-                    ter.renderFrame(finalWorldFrame);
+                    Player.walkDown(finalWorldFrame, ter);
                     break;
                 }
                 case 'a': {
-                    Player.walkLeft(finalWorldFrame);
-                    ter.renderFrame(finalWorldFrame);
+                    Player.walkLeft(finalWorldFrame,ter);
                     break;
                 }
                 case 'd': {
-                    Player.walkRight(finalWorldFrame);
-                    ter.renderFrame(finalWorldFrame);
+                    Player.walkRight(finalWorldFrame, ter);
                     break;
                 }
                 default: {
@@ -466,13 +485,27 @@ public class Game {
             }
         }).start();
     }
+    public class MainTheme extends Audio {
+
+        public MainTheme() throws LineUnavailableException, MalformedURLException, IOException, UnsupportedAudioFileException {
+            init(getClass().getResource("/8_bit_adventure.wav"));
+        }
+
+    }
+
+    public class GameTheme extends Audio {
+
+        public GameTheme() throws LineUnavailableException, MalformedURLException, IOException, UnsupportedAudioFileException {
+            init(getClass().getResource("/funny.wav"));
+        }
+
+    }
 
 
-    private void drawStartUI() {
+    private void drawStartUI() throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         initializeCanvas();
         //playSound("/8_bit_adventure.wav");
-        StdAudio.play("/8_bit_adventure.wav");
-
+        mt.play();
         Font font = new Font("Monaco", Font.BOLD, 60);
         StdDraw.setFont(font);
         StdDraw.text(WIDTH / 2, 3 * HEIGHT / 4, "CS61B: THE GAME");
