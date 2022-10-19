@@ -1,4 +1,5 @@
 package byog.Core;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,50 +8,13 @@ import java.util.Random;
 
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
+
 public class position implements Serializable {
     int Xpos;
     int Ypos;
     boolean blocked;
     boolean damage;
 
-    class Edge{
-        position to;
-        position from;
-        double weight = 1;
-
-        public Edge(position to, position from) {
-            this.to = to;
-            this.from = from;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (!obj.getClass().equals(this.getClass())) {
-                return false;
-            }
-            Edge other = (Edge) obj;
-            if (other.from.equals(this.from) && other.to.equals(this.to)) {
-                return true;
-            }
-            return false;
-        }
-    }
-    List<Edge> getNeighbourEdge(TETile[][] world, int width, int height) {
-        List<Edge> res = new ArrayList<>();
-        if (Xpos + 1 < width && world[Xpos + 1][Ypos].equals(Tileset.FLOOR)) {
-            res.add(new Edge(new position(Xpos + 1, Ypos), this));
-        }
-        if (Xpos - 1 > 0 && world[Xpos - 1][Ypos].equals(Tileset.FLOOR)) {
-            res.add(new Edge(new position(Xpos - 1, Ypos), this));
-        }
-        if (Ypos + 1 < height && world[Xpos][Ypos + 1].equals(Tileset.FLOOR)) {
-            res.add(new Edge(new position(Xpos, Ypos + 1), this));
-        }
-        if (Ypos - 1 > 0 && world[Xpos][Ypos - 1].equals(Tileset.FLOOR)) {
-            res.add(new Edge(new position(Xpos, Ypos - 1), this));
-        }
-        return res;
-    }
 
     public position(int x, int y, boolean blockedornot) {
         this.Xpos = x;
@@ -58,10 +22,12 @@ public class position implements Serializable {
         this.blocked = blockedornot;
         this.damage = false;
     }
+
     public position() {
         this.blocked = false;
         this.damage = false;
     }
+
     public position(int x, int y) {
         this.Xpos = x;
         this.Ypos = y;
@@ -82,7 +48,7 @@ public class position implements Serializable {
     public static List<position> SquarePositionGenerator(int x1, int x2, int y1, int y2, boolean blocked1) {
         List<position> Linepos = new ArrayList<position>();
         for (int x = x1; x < x2; x++) {
-            for (int y = y1; y < y2 ; y++) {
+            for (int y = y1; y < y2; y++) {
                 Linepos.add(new position(x, y, blocked1));
             }
         }
@@ -94,6 +60,7 @@ public class position implements Serializable {
         int y = (Ypos - p2.Ypos) * (Ypos - p2.Ypos);
         return Math.sqrt(x + y);
     }
+
     public void setXpos(int xpos) {
         this.Xpos = xpos;
     }
@@ -113,9 +80,11 @@ public class position implements Serializable {
     public void drawTile(TETile[][] world1, TETile t) {
         world1[Xpos][Ypos] = t;
     }
+
     public boolean isTile(TETile[][] world1, TETile t) {
         return world1[Xpos][Ypos].equals(t);
     }
+
     @Override
     public boolean equals(Object obj) {
         if (!obj.getClass().equals(this.getClass())) {
@@ -127,30 +96,42 @@ public class position implements Serializable {
         }
         return false;
     }
+
     public static position smallerX(position p1, position p2) {
         if (p1.Xpos > p2.Xpos) {
             return p2;
         }
         return p1;
     }
+
     public static position smallerY(position p1, position p2) {
         if (p1.Ypos > p2.Ypos) {
             return p2;
         }
         return p1;
     }
+
     public static position largerX(position p1, position p2) {
         if (p1.Xpos > p2.Xpos) {
             return p1;
         }
         return p2;
     }
+
     public static position largerY(position p1, position p2) {
         if (p1.Ypos > p2.Ypos) {
             return p1;
         }
         return p2;
     }
+
+    @Override
+    public int hashCode() {
+        int res = Xpos * 100 + Ypos;
+        return res;
+    }
+
+
     List<position> getReachableNeighbour(TETile[][] world, int width, int height) {
         List<position> res = new ArrayList<>();
         if (Xpos + 1 < width && world[Xpos + 1][Ypos].equals(Tileset.FLOOR)) {

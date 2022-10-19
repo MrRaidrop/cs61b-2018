@@ -22,6 +22,7 @@ public class AstarSolver {
 
         solution = autoFindPath(world, width, height);
     }
+
     List<position> getSolution() {
         return solution;
     }
@@ -53,9 +54,9 @@ public class AstarSolver {
                 }
                 return solution;
             }
-            for (position.Edge e : cur.getNeighbourEdge(world, width, height)) {
-                if (!marked.contains(e.to)) {
-                    relax(e);
+            for (position q : cur.getReachableNeighbour(world, width, height)) {
+                if (!marked.contains(q)) {
+                    relax(cur, q);
                 }
 
             }
@@ -64,11 +65,9 @@ public class AstarSolver {
     }
 
 
-    void relax(position.Edge e) {
+    void relax(position p, position q) {
         // p is cur pos, q is next possible pos.
-        position p = e.from;
-        position q = e.to;
-        double w = e.weight;
+        double w = 1;
         if (!distTo.containsKey(q) || distTo.get(p) + w < distTo.get(q)) {
             distTo.put(q, distTo.get(p) + w);
             edgeTo.put(q, p);

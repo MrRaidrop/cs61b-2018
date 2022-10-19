@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-/** Square class stores information of the four corner status of positions
+/**
+ * Square class stores information of the four corner status of positions
  * and have method of drawing itself without wall and finding connectors.
  */
 class Square {
@@ -24,6 +25,7 @@ class Square {
     int row;   //the length of across side
     List<position> SquareWallRoom = new ArrayList<position>();
     List<position> SquareRoom = new ArrayList<position>();
+
     Square(position LeftUp, position RightDown) {
         cornerRD = RightDown;
         cornerLU = LeftUp;
@@ -36,9 +38,11 @@ class Square {
         y1 = cornerLU.Ypos; // y1 is the bigger y
         y2 = cornerLD.Ypos; // y2 is the smaller y
     }
+
     position getCentre() {
         return new position((x1 + x2) / 2, (y1 + y2) / 2, false);
     }
+
     void drawSquare(TETile[][] world1, TETile t) {
         for (int x = x1; x < x2; x++) {
             for (int y = y2; y < y1; y++) {
@@ -46,6 +50,7 @@ class Square {
             }
         }
     }
+
     void drawSquareWallFirst(TETile[][] world1, Random ran) {
         for (int x = x1 - 1; x < x2 + 1; x++) {
             for (int y = y2 - 1; y < y1 + 1; y++) {
@@ -55,33 +60,31 @@ class Square {
     }
 
 
-
-
     /**
-    List<Connector> findConnectors(TETile[][] world, int width, int height) {
-        List<Connector> res = new ArrayList<>();
-        for (int i = cornerLD.getX(); i <= cornerRU.getX(); i++) {
-            position p1 = new position(i, cornerLD.getY(), false);
-            Connector.addConnectableDirection(res, world, Tileset.FLOOR, Direction.DOWN, p1, width,
-                    height);
-            position p2 = new position(i, cornerRU.getY(), false);
-            Connector.addConnectableDirection(res, world, Tileset.FLOOR, Direction.UP, p2, width,
-                    height);
-        }
-        for (int j = cornerLD.getY(); j <= cornerRU.getY(); j++) {
-            position p1 = new position(cornerLD.getX(), j, false);
-            Connector.addConnectableDirection(res, world, Tileset.FLOOR, Direction.LEFT, p1, width,
-                    height);
-            position p2 = new position(cornerRU.getX(), j, false);
-            Connector.addConnectableDirection(res, world, Tileset.FLOOR, Direction.RIGHT, p2, width,
-                    height);
-        }
-        return res;
-    }
-    void setConnected(boolean TorF) {
-        connected = TorF;
-    }
-    boolean getConnected() {
-        return connected;
-    }*/
+     List<Connector> findConnectors(TETile[][] world, int width, int height) {
+     List<Connector> res = new ArrayList<>();
+     for (int i = cornerLD.getX(); i <= cornerRU.getX(); i++) {
+     position p1 = new position(i, cornerLD.getY(), false);
+     Connector.addConnectableDirection(res, world, Tileset.FLOOR, Direction.DOWN, p1, width,
+     height);
+     position p2 = new position(i, cornerRU.getY(), false);
+     Connector.addConnectableDirection(res, world, Tileset.FLOOR, Direction.UP, p2, width,
+     height);
+     }
+     for (int j = cornerLD.getY(); j <= cornerRU.getY(); j++) {
+     position p1 = new position(cornerLD.getX(), j, false);
+     Connector.addConnectableDirection(res, world, Tileset.FLOOR, Direction.LEFT, p1, width,
+     height);
+     position p2 = new position(cornerRU.getX(), j, false);
+     Connector.addConnectableDirection(res, world, Tileset.FLOOR, Direction.RIGHT, p2, width,
+     height);
+     }
+     return res;
+     }
+     void setConnected(boolean TorF) {
+     connected = TorF;
+     }
+     boolean getConnected() {
+     return connected;
+     }*/
 }

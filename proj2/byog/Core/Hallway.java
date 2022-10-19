@@ -1,6 +1,8 @@
 package byog.Core;
+
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -25,6 +27,7 @@ class Hallway {
         }
         return new position(pos.Xpos, pos.Ypos + len);
     }
+
     static position addRowHall(TETile[][] world1, position pos, int width, Random ran) {
         for (int x = 0; x < width + 2; x++) {
             world1[pos.Xpos + x][pos.Ypos - 1] = MapGenerator.variant(Tileset.WALL, ran);
@@ -32,11 +35,13 @@ class Hallway {
         }
         return new position(pos.Xpos + width, pos.Ypos);
     }
+
     private static void fillColumHall(TETile[][] world, position p, int len) {
         for (int y = 0; y < len; y += 1) {
             world[p.Xpos][p.Ypos + y] = Tileset.FLOOR;
         }
     }
+
     private static void fillRowHall(TETile[][] world, position p, int width) {
         for (int x = 0; x < width; x += 1) {
             world[p.Xpos + x][p.Ypos] = Tileset.FLOOR;

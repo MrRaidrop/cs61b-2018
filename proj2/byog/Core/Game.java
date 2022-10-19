@@ -32,9 +32,7 @@ public class Game {
     public Game() throws UnsupportedAudioFileException, LineUnavailableException, IOException {
     }
 
-    /**
-     * Method used for playing a fresh game. The game should start from the main menu.
-     */
+
     public void playWithKeyboard() throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         drawStartUI();
         switch (getFirstChar()) {
@@ -57,23 +55,13 @@ public class Game {
         }
 
     }
+
     @Test
     public void test() throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         playWithKeyboard();
     }
 
-    /**
-     * Method used for autograding and testing the game code. The input string will be a series
-     * of characters (for example, "n123sswwdasdassadwas", "n123sss:q", "lwww". The game should
-     * behave exactly as if the user typed these characters into the game after playing
-     * playWithKeyboard. If the string ends in ":q", the same world should be returned as if the
-     * string did not end with q. For example "n123sss" and "n123sss:q" should return the same
-     * world. However, the behavior is slightly different. After playing with "n123sss:q", the game
-     * should save, and thus if we then called playWithInputString with the string "l", we'd expect
-     * to get the exact same world back again, since this corresponds to loading the saved game.
-     * @param input the input string to feed to your program
-     * @return the 2D TETile[][] representing the state of the world
-     */
+
     public TETile[][] playWithInputString(String input) {
         TETile[][] world = new TETile[WIDTH][HEIGHT];
         for (int i = 0; i < input.length(); i++) {
@@ -132,7 +120,7 @@ public class Game {
                     input.charAt(i) == 'd') {
                 res += input.charAt(i);
             } else if (input.charAt(i) == 'q' && i != 0) {
-                if (input.charAt(i- 1) == ':') {
+                if (input.charAt(i - 1) == ':') {
                     res += ':';
                     res += 'q';
                     break;
@@ -150,6 +138,7 @@ public class Game {
 
         play(world);
     }
+
     private void startGame(TETile[][] world, String input, long seed) {
         StdDraw.clear();
         MapGenerator mg = new MapGenerator(WIDTH, HEIGHT, maxRoomNum, world, seed);
@@ -188,7 +177,6 @@ public class Game {
     }
 
 
-
     private char getFirstChar() {
         char c;
         while (true) {
@@ -202,10 +190,12 @@ public class Game {
         }
         return c;
     }
+
     private TETile[][] loadGame() {
         String file = "savefile.txt";
         return loadAnotherGame(file);
     }
+
     private TETile[][] loadGame(String input) {
         TETile[][] finalWorldFrame;
         finalWorldFrame = getSavedGame();
@@ -230,7 +220,7 @@ public class Game {
             char c = StdDraw.nextKeyTyped();
 
             if (c == '1' || c == '2' || c == '3' || c == 'q') {
-                if(c == 'q') {
+                if (c == 'q') {
                     System.exit(0);
                 }
                 String inputFile = "savefile" + c + ".txt";
@@ -279,18 +269,16 @@ public class Game {
     }
 
 
-
-
     private void playAnother(TETile[][] finalWorldFrame, String file) {
         mt.stop();
         StdDraw.disableDoubleBuffering();
         StdDraw.enableDoubleBuffering();
-        gt.play();
+        //gt.play();
         ter.initialize(WIDTH, HEIGHT);
         ter.renderFrame(finalWorldFrame);
         Player.setPos(getInitPlayerPos(finalWorldFrame));
         char pre = 'c';
-        while(true) {
+        while (true) {
             if (!StdDraw.hasNextKeyTyped() && !StdDraw.isMousePressed()) {
                 continue;
             }
@@ -300,9 +288,9 @@ public class Game {
                 lastClickX = (int) (StdDraw.mouseX());
                 lastClickY = (int) (StdDraw.mouseY());
                 ShowTileInfo(finalWorldFrame, lastClickX, lastClickY);
-                if (finalWorldFrame[lastClickX + 5][lastClickY].equals(Tileset.FLOOR)) {
+                if (finalWorldFrame[lastClickX][lastClickY].equals(Tileset.FLOOR)) {
                     Player.autoWalk(finalWorldFrame,
-                            new position(lastClickX + 5, lastClickY),
+                            new position(lastClickX, lastClickY),
                             WIDTH, HEIGHT, ter);
                 }
             }
@@ -332,7 +320,7 @@ public class Game {
                         break;
                     }
                     case 'a': {
-                        Player.walkLeft(finalWorldFrame,ter);
+                        Player.walkLeft(finalWorldFrame, ter);
                         break;
                     }
                     case 'd': {
@@ -347,6 +335,7 @@ public class Game {
 
         }
     }
+
     private void play(TETile[][] finalWorldFrame, String input) {
         StdDraw.disableDoubleBuffering();
         StdDraw.enableDoubleBuffering();
@@ -354,7 +343,7 @@ public class Game {
         ter.renderFrame(finalWorldFrame);
         Player.setPos(getInitPlayerPos(finalWorldFrame));
         char pre = 'c';
-        for (int  i = 0; i < input.length(); i++) {
+        for (int i = 0; i < input.length(); i++) {
             char c = Character.toLowerCase(input.charAt(i));
             if (c == 'q' && pre == ':') {
                 saveGame(finalWorldFrame);
@@ -371,7 +360,7 @@ public class Game {
                     break;
                 }
                 case 'a': {
-                    Player.walkLeft(finalWorldFrame,ter);
+                    Player.walkLeft(finalWorldFrame, ter);
                     break;
                 }
                 case 'd': {
@@ -408,11 +397,9 @@ public class Game {
     }
 
 
-
     private void quitGame() {
         System.exit(0);
     }
-
 
 
     private void saveGame(TETile[][] finalWorldFrame) {
@@ -420,7 +407,7 @@ public class Game {
         saveAnotherGame(finalWorldFrame, file);
     }
 
-    private void saveAnotherGame(TETile[][] finalWorldFrame , String file) {
+    private void saveAnotherGame(TETile[][] finalWorldFrame, String file) {
         Date cur = new Date();
         try {
             ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file));
@@ -460,11 +447,11 @@ public class Game {
     }
 
     private void ShowTileInfo(TETile[][] finalWorldFrame, int x, int y) {
-        String description = finalWorldFrame[x + 5][y].getDescription();
+        String description = finalWorldFrame[x][y].getDescription();
         StdDraw.setPenColor(Color.DARK_GRAY);
         StdDraw.filledRectangle(8, HEIGHT - 1, 4, 1);
         StdDraw.setPenColor(Color.WHITE);
-        StdDraw.text(8, HEIGHT-1, description);
+        StdDraw.text(8, HEIGHT - 1, description);
         StdDraw.show();
     }
 
@@ -485,12 +472,12 @@ public class Game {
             }
         }).start();
     }
+
     public class MainTheme extends Audio {
 
         public MainTheme() throws LineUnavailableException, MalformedURLException, IOException, UnsupportedAudioFileException {
             init(getClass().getResource("/8_bit_adventure.wav"));
         }
-
     }
 
     public class GameTheme extends Audio {
@@ -504,8 +491,7 @@ public class Game {
 
     private void drawStartUI() throws UnsupportedAudioFileException, LineUnavailableException, IOException {
         initializeCanvas();
-        //playSound("/8_bit_adventure.wav");
-        mt.play();
+        //mt.play();
         Font font = new Font("Monaco", Font.BOLD, 60);
         StdDraw.setFont(font);
         StdDraw.text(WIDTH / 2, 3 * HEIGHT / 4, "CS61B: THE GAME");
@@ -529,7 +515,7 @@ public class Game {
 
     static void drawEnd() {
         StdDraw.setPenColor(Color.GREEN);
-        StdDraw.filledRectangle(WIDTH / 2, HEIGHT / 2, WIDTH / 2 , 5);
+        StdDraw.filledRectangle(WIDTH / 2, HEIGHT / 2, WIDTH / 2, 5);
         StdDraw.setPenColor(Color.WHITE);
         Font font = new Font("Monaco", Font.BOLD, 60);
         StdDraw.setFont(font);
@@ -618,6 +604,7 @@ public class Game {
         }
         return null;
     }
+
     private void drawSLDHelperExist(Date cur) {
 
         Font smallFont = new Font("Monaco", Font.BOLD, 30);
@@ -628,6 +615,7 @@ public class Game {
         StdDraw.text(WIDTH / 2, HEIGHT / 4, "Load Game (L)");
         StdDraw.text(WIDTH / 2, HEIGHT / 4 - 2, "Quit (q)");
     }
+
     private void drawSLDHelperNotExist() {
         Font smallFont = new Font("Monaco", Font.BOLD, 30);
         StdDraw.setFont(smallFont);
@@ -635,7 +623,6 @@ public class Game {
         StdDraw.text(WIDTH / 2, HEIGHT / 4, "Start new game (s)");
         StdDraw.text(WIDTH / 2, HEIGHT / 4 - 2, "Quit (q)");
     }
-
 
 
     private void drawSeedInput(long res) {

@@ -11,7 +11,7 @@ import java.io.ObjectInputStream;
 import java.util.*;
 
 public class Player {
-    int health;
+    private int health;
     ArrayList<Equipment> EqList;
     private static position pos;
 
@@ -23,6 +23,10 @@ public class Player {
 
     public static void setPos(position p) {
         pos = p;
+    }
+
+    public int getHealth() {
+        return health;
     }
 
     public static void walkLeft(TETile[][] world, TERenderer ter) {
@@ -62,18 +66,10 @@ public class Player {
         AstarSolver solver = new AstarSolver(world, pos, goalThisTime, w, h);
         List<position> positions = solver.getSolution();
         for (position p : positions) {
-            if (!p.equals(pos)) {
-
-                walk(world, p, ter);
-                ter.renderFrame(world);
-                StdDraw.pause(200);
-            }
+            walk(world, p, ter);
+            StdDraw.pause(200);
         }
     }
-
-
-
-
 
     private static position getGoalPos() {
         try {
